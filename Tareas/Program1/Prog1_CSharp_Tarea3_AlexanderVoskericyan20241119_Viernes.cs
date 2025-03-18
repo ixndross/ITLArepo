@@ -18,7 +18,7 @@ Dictionary<int, bool> bestFriends = new Dictionary<int, bool>();
 
 while (runing)
 {
-    Console.WriteLine(@"1. Agregar Contacto     2. Ver Contactos    3. Buscar Contactos     4. Modificar Contacto   5. Eliminar Contacto    6. Salir");
+    Console.WriteLine("1. Agregar Contacto     2. Ver Contactos    3. Buscar Contactos     4. Modificar Contacto   5. Eliminar Contacto    6. Salir");
     Console.WriteLine("Digite el número de la opción deseada");
 
     int typeOption = Convert.ToInt32(Console.ReadLine());
