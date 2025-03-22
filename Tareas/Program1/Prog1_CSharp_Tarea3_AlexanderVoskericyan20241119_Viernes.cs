@@ -284,7 +284,7 @@ static void ModifyContacts(List<int> ids, Dictionary<int, string> names, Diction
 
 static void DeleteContacts(List<int> ids, Dictionary<int, string> names, Dictionary<int, string> lastnames, Dictionary<int, string> addresses, Dictionary<int, string> telephones, Dictionary<int, string> emails, Dictionary<int, int> ages, Dictionary<int, bool> bestFriends)
 {
-    SearchContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+    ShowContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
 
     var cancelID = Convert.ToInt32(Console.ReadLine());
 
