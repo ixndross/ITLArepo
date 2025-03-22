@@ -65,7 +65,7 @@ namespace Contacts
                 }
                 catch (NullReferenceException)
                 {
-                    Console.WriteLine("El contacto seleccionado no existe.\n ");
+                    Console.WriteLine("\nEl contacto seleccionado no existe.\n");
                 }
                 catch (IndexOutOfRangeException)
                 {
