@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Linq;
-
-Console.WriteLine("Bienvenido a mi lista de Contactes");
+﻿Console.WriteLine("Bienvenido a mi lista de Contactes");
 
 
 //names, lastnames, addresses, telephones, emails, ages, bestfriend
@@ -18,47 +15,64 @@ Dictionary<int, bool> bestFriends = new Dictionary<int, bool>();
 
 while (runing)
 {
-    Console.WriteLine("1. Agregar Contacto     2. Ver Contactos    3. Buscar Contactos     4. Modificar Contacto   5. Eliminar Contacto    6. Salir");
-    Console.WriteLine("Digite el número de la opción deseada");
-
-    int typeOption = Convert.ToInt32(Console.ReadLine());
-
-    switch (typeOption)
+    try
     {
-        case 1:
-            {
-                AddContact(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+        Console.WriteLine("1. Agregar Contacto     2. Ver Contactos    3. Buscar Contactos     4. Modificar Contacto   5. Eliminar Contacto    6. Salir");
+        Console.WriteLine("Digite el número de la opción deseada");
 
-            }
-            break;
-        case 2:
-            {
-                ShowContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
-            }
-            break;
-        case 3: 
-            {
-                SearchContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
-            }
-            break;
-        case 4: 
-            {
-                ModifyContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
-            }
-            break;
-        case 5:
-            {
-                DeleteContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
-            }
-            break;
-        case 6:
-            runing = false;
-            break;
-        default:
-            Console.WriteLine("Favor introducir una entrada valida");
-            break;
+        int typeOption = Convert.ToInt32(Console.ReadLine());
+
+        switch (typeOption)
+        {
+            case 1:
+                {
+                    AddContact(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+
+                }
+                break;
+            case 2:
+                {
+                    ShowContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+                }
+                break;
+            case 3:
+                {
+                    SearchContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+                }
+                break;
+            case 4:
+                {
+                    ModifyContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+                }
+                break;
+            case 5:
+                {
+                    DeleteContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+                }
+                break;
+            case 6:
+                runing = false;
+                break;
+            default:
+                Console.WriteLine("Favor introducir una entrada valida");
+                break;
+        }
+    }
+    catch (NullReferenceException)
+    {
+        Console.WriteLine("El contacto seleccionado no existe.\n");
+    }
+    catch (ArgumentException)
+    {
+        Console.WriteLine("El contacto seleccionado no existe.\n");
+    }
+    catch (FormatException)
+    {
+        Console.WriteLine("Ha ocurrido un problema. Por favor, intente mas tarde.\n");
+        runing = false;
     }
 }
+
 
 
 static void AddContact(List<int> ids, Dictionary<int, string> names, Dictionary<int, string> lastnames, Dictionary<int, string> addresses, Dictionary<int, string> telephones, Dictionary<int, string> emails, Dictionary<int, int> ages, Dictionary<int, bool> bestFriends)
@@ -164,7 +178,7 @@ static void ModifyContacts(List<int> ids, Dictionary<int, string> names, Diction
         Console.WriteLine($"{ids[id - 1]}       {names[id]}         {lastnames[id]}         {addresses[id]}         {telephones[id]}            {emails[id]}            {ages[id]}          {isBestFriendStr}");
     }
 
-    
+
     var ConID = Int32.Parse(Console.ReadLine());
 
     Console.WriteLine("Seleccione que parametro desea modificar en el orden numerico de los datos del contacto, (1. Nombre, 2. Apellido 3. Direccion...): ");
@@ -178,14 +192,16 @@ static void ModifyContacts(List<int> ids, Dictionary<int, string> names, Diction
             string newName = Console.ReadLine();
 
             Console.WriteLine($"¿Estas seguro de que quieres cambiar el nombre de \"{names[ConID]} {lastnames[ConID]}\" por \"{newName}\"? \n Presione 1 para confirmar el cambio, y 2 para descartarlo.");
-            if (int.Parse(Console.ReadLine()) == 1) {
+            if (int.Parse(Console.ReadLine()) == 1)
+            {
                 names[ConID] = newName;
                 Console.WriteLine("El nombre del contacto ha sido actualizado con exito.");
-            } else
+            }
+            else
             {
                 Console.WriteLine($"No se ha podido cambiar el nombre de {names[ConID]}");
             }
-                break;
+            break;
 
         case 2:
             Console.WriteLine($"Escriba el nuevo apellido para {names[ConID]}.");
@@ -279,12 +295,12 @@ static void ModifyContacts(List<int> ids, Dictionary<int, string> names, Diction
             }
             break;
     }
-    
+
 }
 
 static void DeleteContacts(List<int> ids, Dictionary<int, string> names, Dictionary<int, string> lastnames, Dictionary<int, string> addresses, Dictionary<int, string> telephones, Dictionary<int, string> emails, Dictionary<int, int> ages, Dictionary<int, bool> bestFriends)
 {
-    ShowContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
+    SearchContacts(ids, names, lastnames, addresses, telephones, emails, ages, bestFriends);
 
     var cancelID = Convert.ToInt32(Console.ReadLine());
 
@@ -302,7 +318,9 @@ static void DeleteContacts(List<int> ids, Dictionary<int, string> names, Diction
 
         Console.WriteLine("El contacto ha sido exitosamente eliminado.");
 
-    }   else {
+    }
+    else
+    {
         Console.WriteLine("El contacto no fue eliminado.");
     }
 }
