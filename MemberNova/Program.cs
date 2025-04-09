@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design;
 using System.Timers;
 using MemberNova.Helpers;
 
@@ -16,16 +17,20 @@ namespace Program
 
             while (running)
             {
-
-                Console.Write("Seleccione la opción deseada:\n\n1. Administrar usuarios\n2. Administrar membresias\n3. Administrar pagos\n4. Administrar Beneficios.\n5. Salir del programa.\n");
+                Helpers.Selection();
                 int opcion = Int32.Parse(Console.ReadLine());
 
                 UserHelper.PrintUserHeader();
 
                 switch (opcion)
                 {
+                    case 1:
+
                     case 5:
                         running = false;
+                        break;
+                    default:
+                        Console.WriteLine("Por favor, introducir una entrada válida.");
                         break;
                 }
             }
