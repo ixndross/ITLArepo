@@ -8,14 +8,10 @@ namespace MemberNova.Helpers
 {
     class Helpers
     {
-        public static void Selection()
+        public static void Header()
         {
             Console.Write("Eliga una opción: \n");
-            Console.Write("1. Administrar usuarios.\t\t");
-            Console.Write("2. Administrar membresias.\t\t");
-            Console.Write("3. Ver pagos.\t\t");
-            Console.Write("4. Administrar beneficios\t\t");
-            Console.Write("5. Salir\n");
+            Console.Write("1. Administrar usuarios.\t\t2. Administrar membresias.\t\t3. Ver pagos.\t\t4. Administrar beneficios\t\t5. Salir\n");
         }
     }
 }

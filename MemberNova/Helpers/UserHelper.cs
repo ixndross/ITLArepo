@@ -4,22 +4,79 @@ namespace MemberNova.Helpers
 {
     public class UserHelper
     {
-        public static void PrintUserHeader()
+
+        static List<Usuario> Usuarios = new List<Usuario>();
+
+
+        public static void UserSelection()
+        {
+            bool UserState = true;
+
+            while (UserState) {
+
+                Console.Write("Portal de usuarios. Seleccione una de las siguientes opciones: \n");
+                Console.Write("1. Añadir usuarios.\t\t2. Mostrar usuarios.\t\t3. Buscar usuarios.\t\t4. Modificar usuarios\t\t5. Eliminar usuarios\t\t6.Salir.\n\n");
+
+                int UserSelection = Int32.Parse(Console.ReadLine());
+
+                switch (UserSelection)
+                {
+                    case 1:
+                        AddUser(Usuarios);
+
+                        break;
+
+                    case 2:
+                        ShowUsers(Usuarios);
+
+                        break;
+
+                    case 3:
+                        SearchUsers(Usuarios);
+
+                        break;
+
+                    case 4:
+                        UpdateUsers(Usuarios);
+
+                        break;
+
+                    case 5:
+                        RemoveUsers(Usuarios);
+
+                        break;
+
+                    case 6:
+                        UserState = false;
+                        Console.Clear();
+                        break;
+
+                    default:
+                        Console.WriteLine("Por favor, introducir una entrada válida.");
+                        break;
+
+                }
+            }
+        }
+        
+
+        static void PrintUserHeader()
         {
             Console.WriteLine($"\nID\t\tNombre\t\tApellido\t\tTelefono\t\tEmail\t\tDireccion\t\tEdad ");
             Console.WriteLine($"___________________________________________________________________________________________________________________________________\n");
 
         }
 
+
         static void PrintUsuario(List<Usuario> Usuario, int id)
         {
             var usuario = Usuario.FirstOrDefault(p => p.ID == id);
             Console.WriteLine($"{usuario.ID}		{usuario.Name.ToUpper()}      {usuario.LastName.ToUpper()}      {usuario.Phone}         {usuario.Email}     {usuario.BillingAddress}       {usuario.Age}\n");
 
-
         }
 
-        public static void AddUser(List<Usuario> Usuarios)
+
+        static void AddUser(List<Usuario> Usuarios)
         {
             var id = Usuarios.Count + 1;
             var usuario = new Usuario();
@@ -30,20 +87,19 @@ namespace MemberNova.Helpers
             Console.Write("Apellido: ");
             usuario.LastName = Console.ReadLine();
             Console.Write("Numero de telefono: ");
-            usuario.Email = Console.ReadLine();
-            Console.WriteLine("Dirección de correo eléctronico: ");
             usuario.Phone = Console.ReadLine();
+            Console.Write("Dirección de correo eléctronico: ");
+            usuario.Email = Console.ReadLine();
             Console.Write("Dirección: ");
             usuario.BillingAddress = Console.ReadLine();
-            Console.WriteLine("Digite la edad de la persona en números: ");
+            Console.Write("Digite la edad de la persona en números: ");
             usuario.Age = Convert.ToInt32(Console.ReadLine());
 
             Usuarios.Add(usuario);
-
-
         }
 
-        public static void ShowUsers(List<Usuario> Usuarios)
+
+        static void ShowUsers(List<Usuario> Usuarios)
         {
             PrintUserHeader();
             foreach (var user in Usuarios)
@@ -52,7 +108,8 @@ namespace MemberNova.Helpers
             }
         }
 
-        public static void SearchUsers(List<Usuario> Usuarios)
+
+        static void SearchUsers(List<Usuario> Usuarios)
         {
 
             Console.WriteLine("Introduzca el parametro de busqueda: 1. ID 2. Nombre 3. Apellido: ");
@@ -104,7 +161,8 @@ namespace MemberNova.Helpers
 
         }
 
-        public static void UpdateUsers(List<Usuario> Usuarios)
+
+        static void UpdateUsers(List<Usuario> Usuarios)
         {
 
 
@@ -216,7 +274,8 @@ namespace MemberNova.Helpers
             }
         }
 
-        public static void RemoveUsers(List<Usuario> Usuarios)
+
+        static void RemoveUsers(List<Usuario> Usuarios)
         {
             Console.WriteLine("Por favor, digite el numero de identificacion del contacto a eliminar.");
 
@@ -239,5 +298,7 @@ namespace MemberNova.Helpers
                 Console.WriteLine("El contacto no fue eliminado.");
             }
         }
+
+
     }
 }

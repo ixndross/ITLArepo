@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.Design;
-using System.Timers;
+﻿using MemberNova.Admins;
 using MemberNova.Helpers;
 
 namespace Program
@@ -11,27 +9,33 @@ namespace Program
         public static void Main()
         {
             bool running = true;
-            Console.WriteLine("Bienvenido a MemberNova.\n");
-
-            
 
             while (running)
             {
-                Helpers.Selection();
-                int opcion = Int32.Parse(Console.ReadLine());
+                Console.WriteLine("Bienvenido a MemberNova.\n");
 
-                UserHelper.PrintUserHeader();
+                Helpers.Header();
 
-                switch (opcion)
+                int Seleccion = Int32.Parse(Console.ReadLine());
+
+                switch (Seleccion)
                 {
                     case 1:
 
+                        UserHelper.UserSelection();
+                            
+                        break;
+
+                    case 2:
+                        MembershipHelper.MembershipSelection();
+                        break;
+
                     case 5:
-                        running = false;
-                        break;
-                    default:
-                        Console.WriteLine("Por favor, introducir una entrada válida.");
-                        break;
+                    running = false;
+                    break;
+                default:
+                    Console.WriteLine("Por favor, introducir una entrada válida.");
+                    break;
                 }
             }
         }
