@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static MemberNova.Helpers.UserHelper;
+using static MemberNova.Helpers.Users;
 
 namespace MemberNova.Admins
 {

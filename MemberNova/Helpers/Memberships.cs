@@ -4,10 +4,10 @@ using MemberNova.Admins;
 
 namespace MemberNova.Helpers
 {
-    public class MembershipHelper
+    public class Memberships
     {
 
-        static List<Membresia> Membresias = new List<Membresia>();
+        static List<Membership> Membresias = new List<Membership>();
 
 
         public static void MembershipSelection()
@@ -71,7 +71,7 @@ namespace MemberNova.Helpers
         }
 
 
-        static void PrintMembership(List<Membresia> Membresias, int id)
+        static void PrintMembership(List<Membership> Membresias, int id)
         {
             var Membresia = Membresias.FirstOrDefault(p => p.MiD == id);
             Console.WriteLine($"{Membresia.MiD}\t\t{Membresia.Tipo}\t\t{Membresia.Total}\t\t{Membresia.IsExclusive}\n");
@@ -79,10 +79,10 @@ namespace MemberNova.Helpers
         }
 
 
-        static void NuevaMembresia(List<Membresia> Membresias)
+        static void NuevaMembresia(List<Membership> Membresias)
         {
             var id = 1000 + (Membresias.Count * 10);
-            var membresia = new Membresia();
+            var membresia = new Membership();
             
 
             membresia.MiD = id;
@@ -105,7 +105,7 @@ namespace MemberNova.Helpers
         }
 
 
-        static void ShowMembresias(List<Membresia> Membresias)
+        static void ShowMembresias(List<Membership> Membresias)
         {
             PrintMembershipheader();
             foreach (var mbship in Membresias)
@@ -115,7 +115,7 @@ namespace MemberNova.Helpers
         }
 
 
-        static void BuscarMembrias(List<Membresia> Membresias)
+        static void BuscarMembrias(List<Membership> Membresias)
         {
 
             Console.WriteLine("Introduzca el parametro de busqueda: 1. ID 2. Nombre de la membresia: ");
@@ -154,13 +154,12 @@ namespace MemberNova.Helpers
 
         }
 
-        static void ModificarMembresia(List<Membresia> Membresias)
+        static void ModificarMembresia(List<Membership> Membresias)
         {
 
-
+            PrintMembershipheader();
             Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
 
-            PrintMembershipheader();
             foreach (var membership in Membresias)
             {
                 PrintMembership(Membresias, membership.MiD);
@@ -229,11 +228,12 @@ namespace MemberNova.Helpers
         }
 
 
-        static void RemoverMembresias(List<Membresia> Membresias)
+        static void RemoverMembresias(List<Membership> Membresias)
         {
-            Console.WriteLine("Por favor, digite el numero de identificacion de la membresia a eliminar.");
-
+            
             ShowMembresias(Membresias);
+
+            Console.WriteLine("\nPor favor, digite el numero de identificacion de la membresia a eliminar.");
 
             var id = Convert.ToInt32(Console.ReadLine());
             var mbship = Membresias.FirstOrDefault(c => c.MiD == id);

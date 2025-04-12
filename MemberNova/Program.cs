@@ -1,5 +1,4 @@
-﻿using MemberNova.Admins;
-using MemberNova.Helpers;
+﻿using MemberNova.Helpers;
 
 namespace Program
 {
@@ -22,12 +21,22 @@ namespace Program
                 {
                     case 1:
 
-                        UserHelper.UserSelection();
+                        Users.UserSelection();
                             
                         break;
 
                     case 2:
-                        MembershipHelper.MembershipSelection();
+                        Memberships.MembershipSelection();
+                        break;
+
+                    case 3:
+                        Payments.PaymentPortal();
+
+                        break;
+
+                    case 4:
+                        Benefits.BenefitsSelection();
+
                         break;
 
                     case 5:

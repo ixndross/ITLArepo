@@ -2,7 +2,7 @@
 
 namespace MemberNova.Helpers
 {
-    public class UserHelper
+    public class Users
     {
 
         static List<Usuario> Usuarios = new List<Usuario>();
@@ -277,7 +277,7 @@ namespace MemberNova.Helpers
 
         static void RemoveUsers(List<Usuario> Usuarios)
         {
-            Console.WriteLine("Por favor, digite el numero de identificacion del contacto a eliminar.");
+            Console.WriteLine("Por favor, digite el numero de identificacion del usuario a eliminar.");
 
             ShowUsers(Usuarios);
 
@@ -285,17 +285,17 @@ namespace MemberNova.Helpers
             var user = Usuarios.FirstOrDefault(c => c.ID == id);
 
 
-            Console.WriteLine($"¿Esta seguro que quiere eliminar el contacto {user.Name} {user.LastName}? \nPresione 1 para confirmar, 2 para denegar.");
+            Console.WriteLine($"¿Esta seguro que quiere eliminar el usuario {user.Name} {user.LastName}? \nPresione 1 para confirmar, 2 para denegar.");
             if (Int32.Parse(Console.ReadLine()) == 1)
             {
                 Usuarios.Remove(user);
 
-                Console.WriteLine("El contacto ha sido exitosamente eliminado.");
+                Console.WriteLine("El usuario ha sido exitosamente eliminado.");
 
             }
             else
             {
-                Console.WriteLine("El contacto no fue eliminado.");
+                Console.WriteLine("El usuario no fue eliminado.");
             }
         }
 

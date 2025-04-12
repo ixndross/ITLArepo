@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Data.SqlTypes;
 
-public class Membresia
+public class Membership
 {
     [Key]
     public int MiD { get; set; }
