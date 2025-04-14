@@ -4,15 +4,15 @@ namespace MemberNova.Helpers
 {
     public class Users
     {
-
-        static List<Usuario> Usuarios = new List<Usuario>();
-
-
         public static void UserSelection()
         {
+            var context = new DataContext();
+            var Usuario = context.Usuarios.ToList();
+
             bool UserState = true;
 
-            while (UserState) {
+            while (UserState)
+            {
 
                 Console.Write("Portal de usuarios. Seleccione una de las siguientes opciones: \n");
                 Console.Write("1. Añadir usuarios.\t\t2. Mostrar usuarios.\t\t3. Buscar usuarios.\t\t4. Modificar usuarios\t\t5. Eliminar usuarios\t\t6.Salir.\n\n");
@@ -22,27 +22,27 @@ namespace MemberNova.Helpers
                 switch (UserSelection)
                 {
                     case 1:
-                        AddUser(Usuarios);
+                        AddUser();
 
                         break;
 
                     case 2:
-                        ShowUsers(Usuarios);
+                        ShowUsers();
 
                         break;
 
                     case 3:
-                        SearchUsers(Usuarios);
+                        SearchUsers();
 
                         break;
 
                     case 4:
-                        UpdateUsers(Usuarios);
+                        UpdateUsers();
 
                         break;
 
                     case 5:
-                        RemoveUsers(Usuarios);
+                        RemoveUsers();
 
                         break;
 
@@ -58,30 +58,33 @@ namespace MemberNova.Helpers
                 }
             }
         }
-        
+
 
         static void PrintUserHeader()
         {
-            Console.WriteLine($"\nID\t\tNombre\t\tApellido\t\tTelefono\t\tEmail\t\tDireccion\t\tEdad ");
+            Console.WriteLine($"\nID\t\tNombre\t\tTelefono\t\tEmail\t\tDireccion\t\tEdad ");
             Console.WriteLine($"___________________________________________________________________________________________________________________________________\n");
 
         }
 
 
-        static void PrintUsuario(List<Usuario> Usuario, int id)
+        static void PrintUsuario(int id)
         {
+            var context = new DataContext();
+            var Usuario = context.Usuarios.ToList();
+
             var usuario = Usuario.FirstOrDefault(p => p.ID == id);
-            Console.WriteLine($"{usuario.ID}		{usuario.Name.ToUpper()}      {usuario.LastName.ToUpper()}      {usuario.Phone}         {usuario.Email}     {usuario.BillingAddress}       {usuario.Age}\n");
+            Console.WriteLine($"{usuario.ID}\t\t{usuario.GetFullName()}\t\t{usuario.Phone}\t\t{usuario.Email}\t\t{usuario.BillingAddress}\t\t{usuario.Age}\n");
 
         }
 
 
-        static void AddUser(List<Usuario> Usuarios)
+        static void AddUser()
         {
-            var id = Usuarios.Count + 1;
+            var context = new DataContext();
+
             var usuario = new Usuario();
 
-            usuario.ID = id;
             Console.Write("Nombre: ");
             usuario.Name = Console.ReadLine();
             Console.Write("Apellido: ");
@@ -95,22 +98,30 @@ namespace MemberNova.Helpers
             Console.Write("Digite la edad de la persona en números: ");
             usuario.Age = Convert.ToInt32(Console.ReadLine());
 
-            Usuarios.Add(usuario);
+            context.Usuarios.Add(usuario);
+
+            context.SaveChanges();
+
+            Console.Clear();
         }
 
 
-        static void ShowUsers(List<Usuario> Usuarios)
+        static void ShowUsers()
         {
+            var context = new DataContext();
+            List<Usuario> Usuarios = context.Usuarios.ToList();
             PrintUserHeader();
             foreach (var user in Usuarios)
             {
-                PrintUsuario(Usuarios, user.ID);
+                PrintUsuario(user.ID);
             }
         }
 
 
-        static void SearchUsers(List<Usuario> Usuarios)
+        static void SearchUsers()
         {
+            var context = new DataContext();
+            List<Usuario> Usuarios = context.Usuarios.ToList();
 
             Console.WriteLine("Introduzca el parametro de busqueda: 1. ID 2. Nombre 3. Apellido: ");
             var op = Int32.Parse(Console.ReadLine());
@@ -123,7 +134,7 @@ namespace MemberNova.Helpers
                     var usuario = Usuarios.FirstOrDefault(p => p.ID == SelectedId);
 
                     PrintUserHeader();
-                    PrintUsuario(Usuarios, SelectedId);
+                    PrintUsuario(SelectedId);
 
                     break;
 
@@ -136,7 +147,7 @@ namespace MemberNova.Helpers
                     PrintUserHeader();
                     foreach (var name in nameFound)
                     {
-                        PrintUsuario(nameFound, name.ID);
+                        PrintUsuario(name.ID);
                     }
                     break;
 
@@ -149,7 +160,7 @@ namespace MemberNova.Helpers
 
                     foreach (var lname in lastNameTBF)
                     {
-                        PrintUsuario(lastNameTBF, lname.ID);
+                        PrintUsuario(lname.ID);
                     }
                     break;
 
@@ -162,8 +173,10 @@ namespace MemberNova.Helpers
         }
 
 
-        static void UpdateUsers(List<Usuario> Usuarios)
+        static void UpdateUsers()
         {
+            var context = new DataContext();
+            List<Usuario> Usuarios = context.Usuarios.ToList();
 
 
             Console.WriteLine("\nIntroduzca el numero de identificacion del usuario a modificar: ");
@@ -171,13 +184,13 @@ namespace MemberNova.Helpers
             PrintUserHeader();
             foreach (var usuario in Usuarios)
             {
-                PrintUsuario(Usuarios, usuario.ID);
+                PrintUsuario(usuario.ID);
             }
 
             var id = Convert.ToInt32(Console.ReadLine());
             var user = Usuarios.FirstOrDefault(c => c.ID == id);
 
-            Console.WriteLine("\nSeleccione que parametro desea modificar en el orden numerico de los datos del usuario, (1. Nombre, 2. Apellido 3. Direccion...): ");
+            Console.WriteLine("\nSeleccione que parametro desea modificar en el orden numerico de los datos del usuario, (1. Nombre, 2. Apellido 3. Teléfono...): ");
             var sel = Int32.Parse(Console.ReadLine());
 
             switch (sel)
@@ -272,14 +285,20 @@ namespace MemberNova.Helpers
                 default:
                     break;
             }
+
+            context.SaveChanges();
         }
 
 
-        static void RemoveUsers(List<Usuario> Usuarios)
+        static void RemoveUsers()
         {
+
+            var context = new DataContext();
+            List<Usuario> Usuarios = context.Usuarios.ToList();
+
             Console.WriteLine("Por favor, digite el numero de identificacion del usuario a eliminar.");
 
-            ShowUsers(Usuarios);
+            ShowUsers();
 
             var id = Convert.ToInt32(Console.ReadLine());
             var user = Usuarios.FirstOrDefault(c => c.ID == id);
@@ -288,9 +307,11 @@ namespace MemberNova.Helpers
             Console.WriteLine($"¿Esta seguro que quiere eliminar el usuario {user.Name} {user.LastName}? \nPresione 1 para confirmar, 2 para denegar.");
             if (Int32.Parse(Console.ReadLine()) == 1)
             {
-                Usuarios.Remove(user);
+                context.Usuarios.Remove(user);
 
                 Console.WriteLine("El usuario ha sido exitosamente eliminado.");
+
+                context.SaveChanges();
 
             }
             else

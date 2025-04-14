@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class Beneficios
+[Table("Beneficios")]
+public class Beneficio
 {
     [Key]
+    [Column("ID")]
     public int BiD { get; set; }
 
-    [MaxLength(30)]
+    [MaxLength(60)]
     public string Nombre { get; set; }
 
     [MaxLength(60)]

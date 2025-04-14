@@ -5,12 +5,11 @@ namespace MemberNova.Helpers
 {
     public class Benefits
     {
-
-        static List<Beneficios> Beneficios = new List<Beneficios>();
-
-
         public static void BenefitsSelection()
         {
+            var context = new DataContext();
+            List<Beneficio> Beneficios = context.Beneficios.ToList();
+
             bool BenState = true;
 
             while (BenState)
@@ -24,22 +23,22 @@ namespace MemberNova.Helpers
                 switch (BenefitsSelection)
                 {
                     case 1:
-                        CrearBeneficio(Beneficios);
+                        CrearBeneficio();
 
                         break;
 
                     case 2:
-                        MostrarBeneficios(Beneficios);
+                        MostrarBeneficios();
 
                         break;
 
                     case 3:
-                        ActualizarBeneficios(Beneficios);
+                        ActualizarBeneficios();
 
                         break;
 
                     case 4:
-                        RemoveBeneficios(Beneficios);
+                        RemoveBeneficios();
 
                         break;
 
@@ -65,20 +64,24 @@ namespace MemberNova.Helpers
         }
 
 
-        static void PrintUsuario(List<Beneficios> Beneficios, int id)
+        static void PrintUsuario(int id)
         {
+            var context = new DataContext();
+            List<Beneficio> Beneficios = context.Beneficios.ToList();
+
             var beneficio = Beneficios.FirstOrDefault(p => p.BiD == id);
             Console.WriteLine($"{beneficio.BiD}\t\t{beneficio.Nombre}\t\t{beneficio.TipoMembresia}\t\t{beneficio.Descripcion}\n");
 
         }
 
 
-        static void CrearBeneficio(List<Beneficios> Beneficios)
+        static void CrearBeneficio()
         {
-            var id = Beneficios.Count + 1;
-            var Beneficio = new Beneficios();
+            var context = new DataContext();
+            List<Beneficio> Beneficios = context.Beneficios.ToList();
 
-            Beneficio.BiD = id;
+            Beneficio Beneficio = new Beneficio();
+
             Console.Write("¿Cual es el nombre de este beneficio?: ");
             Beneficio.Nombre = Console.ReadLine();
             Console.Write("¿En que tipo de membresia se ocupa este beneficio?: ");
@@ -86,23 +89,30 @@ namespace MemberNova.Helpers
             Console.WriteLine("Descripcion de la membresia: ");
             Beneficio.Descripcion = Console.ReadLine();
 
-            Beneficios.Add(Beneficio);
+            context.Beneficios.Add(Beneficio);
+
+            context.SaveChanges();
         }
 
 
-        static void MostrarBeneficios(List<Beneficios> Beneficios)
+        static void MostrarBeneficios()
         {
+            var context = new DataContext();
+            List<Beneficio> Beneficios = context.Beneficios.ToList();
+
             PrintBenHeader();
             foreach (var beneficio in Beneficios)
             {
-                PrintUsuario(Beneficios, beneficio.BiD);
+                PrintUsuario(beneficio.BiD);
             }
         }
 
-        static void ActualizarBeneficios(List<Beneficios> Beneficios)
+        static void ActualizarBeneficios()
         {
+            var context = new DataContext();
+            List<Beneficio> Beneficios = context.Beneficios.ToList();
 
-            MostrarBeneficios(Beneficios);
+            MostrarBeneficios();
 
             Console.WriteLine("\nIntroduzca el numero de identificacion del beneficio a modificar: ");
 
@@ -167,14 +177,18 @@ namespace MemberNova.Helpers
                 default:
                     break;
             }
+            context.SaveChanges();
         }
 
 
-        static void RemoveBeneficios(List<Beneficios> Beneficios)
+        static void RemoveBeneficios()
         {
+            var context = new DataContext();
+            List<Beneficio> Beneficios = context.Beneficios.ToList();
+
             Console.WriteLine("Por favor, digite el numero de identificacion del beneficio a eliminar.");
 
-            MostrarBeneficios(Beneficios);
+            MostrarBeneficios();
 
             var id = Convert.ToInt32(Console.ReadLine());
             var ben = Beneficios.FirstOrDefault(c => c.BiD == id);
@@ -183,7 +197,7 @@ namespace MemberNova.Helpers
             Console.WriteLine($"¿Esta seguro que quiere eliminar el beneficio {ben.Nombre}? \nPresione 1 para confirmar, 2 para denegar.");
             if (Int32.Parse(Console.ReadLine()) == 1)
             {
-                Beneficios.Remove(ben);
+                context.Beneficios.Remove(ben);
 
                 Console.WriteLine("El contacto ha sido exitosamente eliminado.");
 
@@ -192,6 +206,8 @@ namespace MemberNova.Helpers
             {
                 Console.WriteLine("El contacto no fue eliminado.");
             }
+
+            context.SaveChanges();
         }
 
 
