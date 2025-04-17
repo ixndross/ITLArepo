@@ -13,10 +13,12 @@ namespace MemberNova.Helpers
 
             bool MemberState = true;
 
+            Console.WriteLine("\nPortal de membresias.");
+
             while (MemberState)
             {
 
-                Console.Write("Portal de membresias. Seleccione una de las siguientes opciones: \n");
+                Console.Write("\nSeleccione una de las siguientes opciones: \n");
                 Console.WriteLine("1. Añadir Membresias.\t\t2. Mostrar membresias.\t\t3. Modificar detalles de membresia\t\t4. Eliminar membresia\t\t5. Salir.\n");
 
                 int MemberSelection = Convert.ToInt32(Console.ReadLine());
@@ -54,14 +56,6 @@ namespace MemberNova.Helpers
 
                 }
             }
-        }
-
-
-        static void PrintMembershipheader()
-        {
-            Console.WriteLine($"\nMbshipID\t\tTipo\t\tDescripcion\t\tPrecio\t\tEstado de Excusividad\n");
-            Console.WriteLine($"___________________________________________________________________________________________________________________________________\n");
-
         }
 
         static Table MembershipTable()
@@ -118,7 +112,6 @@ namespace MemberNova.Helpers
 
             var table = MembershipTable();
 
-            PrintMembershipheader();
             foreach (var mbship in Membresias)
             {
                 PrintMembership(mbship.MiD, table);
@@ -134,15 +127,16 @@ namespace MemberNova.Helpers
             Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
 
             var table = MembershipTable();
+            ShowMembresias();
 
             Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
 
-            ShowMembresias();
+            
 
             var id = Convert.ToInt32(Console.ReadLine());
             var mbship = Membresias.FirstOrDefault(c => c.MiD == id);
 
-            Console.WriteLine("\n Seleccione el parametro a modificar:\n1. Nombre de la membresia.\n2. Descripcion. \n3. Precio): ");
+            Console.WriteLine("\n Seleccione el parametro a modificar:\n1. Nombre de la membresia.\n2. Descripcion. \n3. Precio: ");
             var sel = Int32.Parse(Console.ReadLine());
 
             switch (sel)
@@ -156,11 +150,11 @@ namespace MemberNova.Helpers
                     if (int.Parse(Console.ReadLine()) == 1)
                     {
                         mbship.Tipo = newType;
-                        Console.WriteLine("El nombre de la membresia ha sido actualizado con exito.");
+                        Console.WriteLine("El nombre de la membresia ha sido actualizado con exito.\n");
                     }
                     else
                     {
-                        Console.WriteLine($"No se ha podido cambiar el nombre de la membresia");
+                        Console.WriteLine($"No se ha podido cambiar el nombre de la membresia.\n");
                     }
                     break;
 
