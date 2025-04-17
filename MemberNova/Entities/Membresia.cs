@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlTypes;
+using MemberNova.Admins;
 
 [Table("Membresias")]
 public class Membresia
@@ -21,5 +22,6 @@ public class Membresia
 
     //Parametro por si el tipo de membresia es especial de algun tipo, con alguna disponibilidad exclusiva.
     public string IsExclusive { get; set; }
+    public ICollection<Usuario> Usuarios { get; } = new List<Usuario>();
 
 }

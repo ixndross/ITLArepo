@@ -1,13 +1,15 @@
 ﻿using MemberNova.Admins;
+using Spectre.Console;
 
 namespace MemberNova.Helpers
 {
     public class Users
     {
+        
         public static void UserSelection()
         {
-            var context = new DataContext();
-            var Usuario = context.Usuarios.ToList();
+            //var context = new DataContext();
+            //var Usuario = context.Usuarios.ToList();
 
             bool UserState = true;
 
@@ -59,50 +61,71 @@ namespace MemberNova.Helpers
             }
         }
 
-
-        static void PrintUserHeader()
+        static Table UserTable()
         {
-            Console.WriteLine($"\nID\t\tNombre\t\tTelefono\t\tEmail\t\tDireccion\t\tEdad ");
-            Console.WriteLine($"___________________________________________________________________________________________________________________________________\n");
+            var table = new Table();
+            table.Border = TableBorder.Square;
+            table.ShowRowSeparators = true;
+            table.AddColumn("ID");
+            table.AddColumn("Nombre");
+            table.AddColumn("Telefono");
+            table.AddColumn("Email");
+            table.AddColumn("Direccion");
+            table.AddColumn("Edad");
+            table.AddColumn("Tipo de membresia");
 
+            return table;
         }
 
-
-        static void PrintUsuario(int id)
+        static void PrintUsuario(int id, Table table)
         {
             var context = new DataContext();
-            var Usuario = context.Usuarios.ToList();
+            var usuario = context.Usuarios.FirstOrDefault(p => p.ID == id);
 
-            var usuario = Usuario.FirstOrDefault(p => p.ID == id);
-            Console.WriteLine($"{usuario.ID}\t\t{usuario.GetFullName()}\t\t{usuario.Phone}\t\t{usuario.Email}\t\t{usuario.BillingAddress}\t\t{usuario.Age}\n");
 
+            table.AddRow($"{usuario.ID}", $"{usuario.GetFullName()}", $"{usuario.Phone}", $"{usuario.Email}", $"{usuario.BillingAddress}", $"{usuario.Age}", $"{context.Membresias.FirstOrDefault(p => p.MiD == usuario.TipoMembresia).Tipo}");
+            
         }
 
 
         static void AddUser()
         {
             var context = new DataContext();
-
             var usuario = new Usuario();
 
-            Console.Write("Nombre: ");
-            usuario.Name = Console.ReadLine();
-            Console.Write("Apellido: ");
-            usuario.LastName = Console.ReadLine();
-            Console.Write("Numero de telefono: ");
-            usuario.Phone = Console.ReadLine();
-            Console.Write("Dirección de correo eléctronico: ");
-            usuario.Email = Console.ReadLine();
-            Console.Write("Dirección: ");
-            usuario.BillingAddress = Console.ReadLine();
-            Console.Write("Digite la edad de la persona en números: ");
-            usuario.Age = Convert.ToInt32(Console.ReadLine());
+            try
+            {
+                Console.Write("Nombre: ");
+                usuario.Name = Console.ReadLine();
+                Console.Write("Apellido: ");
+                usuario.LastName = Console.ReadLine();
+                Console.Write("Numero de telefono: ");
+                usuario.Phone = Console.ReadLine();
+                Console.Write("Dirección de correo eléctronico: ");
+                usuario.Email = Console.ReadLine();
+                Console.Write("Dirección: ");
+                usuario.BillingAddress = Console.ReadLine();
+                Console.Write("Digite la edad de la persona en números: ");
+                usuario.Age = Convert.ToInt32(Console.ReadLine());
 
-            context.Usuarios.Add(usuario);
+                Console.WriteLine("Confirme el tipo de membresia del usuario.");
 
-            context.SaveChanges();
+                Memberships.ShowMembresias();
+                usuario.TipoMembresia = Convert.ToInt32(Console.ReadLine());
 
-            Console.Clear();
+                context.Usuarios.Add(usuario);
+
+                context.SaveChanges();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                Console.WriteLine("ERROR AL CREAR EL USUARIO.\n\nIntroduzca una entrada valida.");
+                Console.ReadKey();
+            }
+            finally
+            {
+                Console.Clear();
+            }
         }
 
 
@@ -110,11 +133,14 @@ namespace MemberNova.Helpers
         {
             var context = new DataContext();
             List<Usuario> Usuarios = context.Usuarios.ToList();
-            PrintUserHeader();
+
+            var table = UserTable();
             foreach (var user in Usuarios)
             {
-                PrintUsuario(user.ID);
+                PrintUsuario(user.ID, table);
             }
+            AnsiConsole.Write(table);
+
         }
 
 
@@ -122,6 +148,8 @@ namespace MemberNova.Helpers
         {
             var context = new DataContext();
             List<Usuario> Usuarios = context.Usuarios.ToList();
+
+            var table = UserTable();
 
             Console.WriteLine("Introduzca el parametro de busqueda: 1. ID 2. Nombre 3. Apellido: ");
             var op = Int32.Parse(Console.ReadLine());
@@ -133,8 +161,8 @@ namespace MemberNova.Helpers
                     int SelectedId = Convert.ToInt32(Console.ReadLine());
                     var usuario = Usuarios.FirstOrDefault(p => p.ID == SelectedId);
 
-                    PrintUserHeader();
-                    PrintUsuario(SelectedId);
+                    PrintUsuario(SelectedId, table);
+                    AnsiConsole.Write(table);
 
                     break;
 
@@ -144,11 +172,12 @@ namespace MemberNova.Helpers
 
                     var nameFound = Usuarios.Where(n => n.Name.ToUpper().Contains(nameCrit.ToUpper())).ToList();
 
-                    PrintUserHeader();
                     foreach (var name in nameFound)
                     {
-                        PrintUsuario(name.ID);
+                        PrintUsuario(name.ID, table);
                     }
+                    AnsiConsole.Write(table);
+
                     break;
 
                 case 3:
@@ -156,16 +185,17 @@ namespace MemberNova.Helpers
                     var lastNCrit = Console.ReadLine();
 
                     var lastNameTBF = Usuarios.Where(l => l.LastName.ToUpper().Contains(lastNCrit.ToUpper())).ToList();
-                    PrintUserHeader();
 
                     foreach (var lname in lastNameTBF)
                     {
-                        PrintUsuario(lname.ID);
+                        PrintUsuario(lname.ID, table);
                     }
+                    AnsiConsole.Write(table);
+
                     break;
 
                 default:
-                    Console.WriteLine("Favor introducir una entrada valida");
+                    Console.WriteLine("Favor introducir una entrada valida.");
                     break;
             }
 
@@ -178,14 +208,17 @@ namespace MemberNova.Helpers
             var context = new DataContext();
             List<Usuario> Usuarios = context.Usuarios.ToList();
 
+            var table = UserTable();
+
 
             Console.WriteLine("\nIntroduzca el numero de identificacion del usuario a modificar: ");
 
-            PrintUserHeader();
-            foreach (var usuario in Usuarios)
+            foreach(var usuario in Usuarios)
             {
-                PrintUsuario(usuario.ID);
+                PrintUsuario(usuario.ID, table);
             }
+
+            AnsiConsole.Write(table);
 
             var id = Convert.ToInt32(Console.ReadLine());
             var user = Usuarios.FirstOrDefault(c => c.ID == id);

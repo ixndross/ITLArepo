@@ -1,4 +1,5 @@
 ﻿
+using System.Reflection.Metadata;
 using MemberNova.Admins;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,5 +13,13 @@ public class DataContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer("Server=IxnDross\\SQLEXPRESS;Database=Membernova;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=True");
+    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Usuario>()
+            .HasOne(e => e.Membresia)
+            .WithMany(e => e.Usuarios)
+            .HasForeignKey(e => e.TipoMembresia)
+            .IsRequired();
     }
 }

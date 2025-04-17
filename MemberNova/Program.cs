@@ -1,4 +1,5 @@
 ﻿using MemberNova.Helpers;
+using Spectre.Console;
 
 namespace Program
 {
@@ -9,9 +10,13 @@ namespace Program
         {
             bool running = true;
 
+            var context = new DataContext();
+
             while (running)
             {
-                Console.WriteLine("Bienvenido a MemberNova.\n");
+                Console.Clear();
+
+                Console.WriteLine("Bienvenido a MemberNova.\n"); //Try_catch needed
 
                 Helpers.Header();
 

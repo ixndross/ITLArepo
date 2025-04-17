@@ -1,5 +1,7 @@
 ﻿using System.Data.SqlTypes;
+using MemberNova.Admins;
 using Microsoft.EntityFrameworkCore.Storage.Json;
+using Spectre.Console;
 
 namespace MemberNova.Helpers
 { 
@@ -7,8 +9,7 @@ namespace MemberNova.Helpers
     {
         public static void MembershipSelection()
         {
-            var context = new DataContext();
-            List<Membresia> Membresias = context.Membresias.ToList();
+            //var context = new DataContext();
 
             bool MemberState = true;
 
@@ -63,25 +64,35 @@ namespace MemberNova.Helpers
 
         }
 
+        static Table MembershipTable()
+        {
+            var table = new Table();
+            table.Border = TableBorder.Square;
+            table.ShowRowSeparators = true;
+            table.AddColumn("ID");
+            table.AddColumn("Nombre");
+            table.AddColumn("Descripcion");
+            table.AddColumn("Precio");
+            table.AddColumn("Parametros de exclusividad");
+            table.AddColumn("Numero de miembros");
 
-        static void PrintMembership(int id)
+            return table;
+        }
+
+
+        static void PrintMembership(int id, Table table)
         {
             var context = new DataContext();
-            List<Membresia> Membresias = context.Membresias.ToList();
 
-            var Membresia = Membresias.FirstOrDefault(p => p.MiD == id);
-            Console.WriteLine($"{Membresia.MiD}\t\t{Membresia.Tipo}\t\t{Membresia.Descripcion}\t\t{Membresia.Total}\t\t{Membresia.IsExclusive}\n");
+            var Membresia = context.Membresias.FirstOrDefault(p => p.MiD == id);
 
+            table.AddRow($"{Membresia.MiD}", $"{Membresia.Tipo}", $"{Membresia.Descripcion}", $"{Membresia.Total}", $"{Membresia.IsExclusive}", $"{context.Usuarios.Where(p => p.TipoMembresia == Membresia.MiD).ToList().Count}");
         }
-         
-
         static void NuevaMembresia()
         {
             var context = new DataContext();
             List<Membresia> Membresias = context.Membresias.ToList();
-
             var membresia = new Membresia();
-
             Console.Write("Escriba el nombre de la nueva membresia: ");
             membresia.Tipo = Console.ReadLine();
             Console.WriteLine("Introduzca la descripcion de la nueva membresia.");
@@ -89,44 +100,44 @@ namespace MemberNova.Helpers
             Console.WriteLine("Introduzca el costo total de la nueva membresia.");
             membresia.Total = decimal.Parse(Console.ReadLine());
             membresia.IsExclusive = "N/A";
-            Console.WriteLine("¿Es esta membresia exclusiva? Presione 1 para confirmar, o cualquier otro boton para rechazar.");
-
+            Console.WriteLine("¿Es esta membresia exclusiva?\nPresione 1 para confirmar. Presione otro boton para rechazar.");
             if (Int32.Parse(Console.ReadLine()) == 1)
             {
                 Console.WriteLine("Introduzca los parametros de la exclusividad de este tipo de membresia.");
                 membresia.IsExclusive = Console.ReadLine();
             }
-
             context.Membresias.Add(membresia);
-
             context.SaveChanges();
         }
 
 
-        static void ShowMembresias()
+        internal static void ShowMembresias()
         {
             var context = new DataContext();
             List<Membresia> Membresias = context.Membresias.ToList();
 
+            var table = MembershipTable();
+
             PrintMembershipheader();
             foreach (var mbship in Membresias)
             {
-                PrintMembership(mbship.MiD);
+                PrintMembership(mbship.MiD, table);
             }
+            AnsiConsole.Write(table);
         }
 
         static void ModificarMembresia()
         {
             var context = new DataContext();
-            List<Membresia> Membresias = context.Membresias.ToList(); 
-            
-            PrintMembershipheader();
+            List<Membresia> Membresias = context.Membresias.ToList();
 
-            foreach (var membership in Membresias)
-            {
-                PrintMembership(membership.MiD);
-            }
             Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
+
+            var table = MembershipTable();
+
+            Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
+
+            ShowMembresias();
 
             var id = Convert.ToInt32(Console.ReadLine());
             var mbship = Membresias.FirstOrDefault(c => c.MiD == id);
@@ -198,6 +209,8 @@ namespace MemberNova.Helpers
         {
             var context = new DataContext();
             List<Membresia> Membresias = context.Membresias.ToList();
+
+            Console.WriteLine("\nPor favor, digite el numero de identificacion de la membresia a eliminar.");
 
             ShowMembresias();
 

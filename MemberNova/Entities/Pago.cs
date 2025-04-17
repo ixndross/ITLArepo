@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MemberNova.Admins;
 
 [Table("Pagos")]
 public class Pago
@@ -19,6 +20,9 @@ public class Pago
     public decimal Descuento { get; set; }
 
     public decimal Total { get; set; }
+
+    [ForeignKey("UserCharged")]
+    public Usuario Usuario { get; set; }
 
     public decimal GetTotal()
     {

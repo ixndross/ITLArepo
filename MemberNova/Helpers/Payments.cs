@@ -7,9 +7,6 @@ namespace MemberNova.Helpers
 
         public static void PaymentPortal()
         {
-            var context = new DataContext();
-            List<Pago> Pagos = context.Pagos.ToList();
-
             bool PaymentState = true;
 
             while (PaymentState)
@@ -28,7 +25,7 @@ namespace MemberNova.Helpers
                         break;
 
                     case 2:
-                        NewPaymentManual();
+                        PagoManual();
 
                         break;
 
@@ -75,7 +72,13 @@ namespace MemberNova.Helpers
         }
 
 
-        static void NewPaymentManual()
+
+        //Payment processor's API can be included in this section as an authomatic way of charging users and members.
+
+        //static void Payments() { }
+
+
+        static void PagoManual()
         {
             var context = new DataContext();
             List<Pago> Pagos = context.Pagos.ToList();

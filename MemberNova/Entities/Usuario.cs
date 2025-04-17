@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MemberNova.Helpers;
 
 namespace MemberNova.Admins
 {
@@ -32,6 +33,13 @@ namespace MemberNova.Admins
         [Column("Edad")]
         public int Age { get; set; }
 
+        //Llave foranea dentro de la base de datos, relacionando al usuario con una membresia con ID unico.
+        [ForeignKey("TipoMembresia")]
+        public int TipoMembresia { get; set; }
+        //Referencia de navegacion a la entidad Membresia.
+        public Membresia Membresia { get; set; } = null;
+
+        //Metodo para exponer nombre completo de usuario.
         public string GetFullName()
         {
             Name = Name is null ? "" : Name;
