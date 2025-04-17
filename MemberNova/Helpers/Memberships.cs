@@ -1,6 +1,5 @@
-﻿using System.Data.SqlTypes;
-using MemberNova.Admins;
-using Microsoft.EntityFrameworkCore.Storage.Json;
+﻿using MemberNova.Admins;
+using Microsoft.Identity.Client.Extensions.Msal;
 using Spectre.Console;
 
 namespace MemberNova.Helpers
@@ -17,43 +16,50 @@ namespace MemberNova.Helpers
 
             while (MemberState)
             {
-
-                Console.Write("\nSeleccione una de las siguientes opciones: \n");
-                Console.WriteLine("1. Añadir Membresias.\t\t2. Mostrar membresias.\t\t3. Modificar detalles de membresia\t\t4. Eliminar membresia\t\t5. Salir.\n");
-
-                int MemberSelection = Convert.ToInt32(Console.ReadLine());
-
-                switch (MemberSelection)
+                try
                 {
-                    case 1:
-                        NuevaMembresia();
+                    Console.Write("\nSeleccione una de las siguientes opciones: \n");
+                    Console.WriteLine("1. Añadir Membresias.\n2. Mostrar membresias.\n3. Modificar detalles de membresia\n4. Salir.\n");
 
-                        break;
+                    int MemberSelection = Convert.ToInt32(Console.ReadLine());
 
-                    case 2:
-                        ShowMembresias();
+                    switch (MemberSelection)
+                    {
+                        case 1:
+                            NuevaMembresia();
 
-                        break;
+                            break;
 
-                    case 3:
-                        ModificarMembresia();
+                        case 2:
+                            ShowMembresias();
 
-                        break;
+                            break;
 
-                    case 4:
-                        RemoverMembresias();
+                        case 3:
+                            ModificarMembresia();
 
-                        break;
+                            break;
 
-                    case 5:
-                        MemberState = false;
-                        Console.Clear();
-                        break;
+                        case 4:
+                            MemberState = false;
+                            Console.Clear();
+                            break;
 
-                    default:
-                        Console.WriteLine("Por favor, introducir una entrada válida.");
-                        break;
+                        default:
+                            Console.WriteLine("Por favor, introducir una entrada válida.");
+                            break;
 
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Error: Formato de entrada no válido.\nIntente nuevamente.\n {ex.Message}");
+                    return;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Ha ocurrido un error inesperado. Por favor intente de nuevo.");
+                    return;
                 }
             }
         }
@@ -84,24 +90,41 @@ namespace MemberNova.Helpers
         }
         static void NuevaMembresia()
         {
-            var context = new DataContext();
-            List<Membresia> Membresias = context.Membresias.ToList();
-            var membresia = new Membresia();
-            Console.Write("Escriba el nombre de la nueva membresia: ");
-            membresia.Tipo = Console.ReadLine();
-            Console.WriteLine("Introduzca la descripcion de la nueva membresia.");
-            membresia.Descripcion = Console.ReadLine();
-            Console.WriteLine("Introduzca el costo total de la nueva membresia.");
-            membresia.Total = decimal.Parse(Console.ReadLine());
-            membresia.IsExclusive = "N/A";
-            Console.WriteLine("¿Es esta membresia exclusiva?\nPresione 1 para confirmar. Presione otro boton para rechazar.");
-            if (Int32.Parse(Console.ReadLine()) == 1)
+
+            try
             {
-                Console.WriteLine("Introduzca los parametros de la exclusividad de este tipo de membresia.");
-                membresia.IsExclusive = Console.ReadLine();
+                var context = new DataContext();
+                List<Membresia> Membresias = context.Membresias.ToList();
+                var membresia = new Membresia();
+                Console.Write("Escriba el nombre de la nueva membresia: ");
+                membresia.Tipo = Console.ReadLine();
+                Console.WriteLine("Introduzca la descripcion de la nueva membresia.");
+                membresia.Descripcion = Console.ReadLine();
+                Console.WriteLine("Introduzca el costo total de la nueva membresia.");
+                membresia.Total = decimal.Parse(Console.ReadLine());
+                membresia.IsExclusive = "N/A";
+                Console.WriteLine("¿Es esta membresia exclusiva?\nPresione 1 para confirmar. Presione otro boton para rechazar.");
+                if (Int32.Parse(Console.ReadLine()) == 1)
+                {
+                    Console.WriteLine("Introduzca los parametros de la exclusividad de este tipo de membresia.");
+                    membresia.IsExclusive = Console.ReadLine();
+                }
+
+                membresia.NumMiembros = context.Usuarios.Where(p => p.TipoMembresia == membresia.MiD).ToList().Count();
+
+                context.Membresias.Add(membresia);
+                context.SaveChanges();
             }
-            context.Membresias.Add(membresia);
-            context.SaveChanges();
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                Console.WriteLine("ERROR AL CREAR LA MEMBRESIA.\n\nIntroduzca una entrada valida.");
+                Console.ReadKey();
+            }
+            finally
+            {
+                Console.Clear();
+            }
+            
         }
 
 
@@ -117,6 +140,8 @@ namespace MemberNova.Helpers
                 PrintMembership(mbship.MiD, table);
             }
             AnsiConsole.Write(table);
+
+            context.SaveChanges();
         }
 
         static void ModificarMembresia()
@@ -131,10 +156,14 @@ namespace MemberNova.Helpers
 
             Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
 
-            
-
             var id = Convert.ToInt32(Console.ReadLine());
             var mbship = Membresias.FirstOrDefault(c => c.MiD == id);
+
+            if(mbship == null)
+            {
+                Console.WriteLine("No se ha encontrado la membresia seleccionada.\n");
+                return;
+            }
 
             Console.WriteLine("\n Seleccione el parametro a modificar:\n1. Nombre de la membresia.\n2. Descripcion. \n3. Precio: ");
             var sel = Int32.Parse(Console.ReadLine());
@@ -191,44 +220,13 @@ namespace MemberNova.Helpers
                     break;
 
                 default:
+                    Console.WriteLine("Introduzca una entrada valida.");
                     break;
 
             }
             context.SaveChanges();
             
         }
-
-
-        static void RemoverMembresias()
-        {
-            var context = new DataContext();
-            List<Membresia> Membresias = context.Membresias.ToList();
-
-            Console.WriteLine("\nPor favor, digite el numero de identificacion de la membresia a eliminar.");
-
-            ShowMembresias();
-
-            Console.WriteLine("\nPor favor, digite el numero de identificacion de la membresia a eliminar.");
-
-            var id = Convert.ToInt32(Console.ReadLine());
-            var mbship = Membresias.FirstOrDefault(c => c.MiD == id);
-
-
-            Console.WriteLine($"¿Esta seguro que quiere eliminar esta membresia? \nPresione 1 para confirmar, 2 para denegar.");
-            if (Int32.Parse(Console.ReadLine()) == 1)
-            {
-                context.Membresias.Remove(mbship);
-
-                Console.WriteLine("La membresia ha sido exitosamente eliminada.");
-            }
-            else
-            {
-                Console.WriteLine("La membresia no fue eliminada.");
-            }
-
-            context.SaveChanges();
-        }
-
 
     }
 }

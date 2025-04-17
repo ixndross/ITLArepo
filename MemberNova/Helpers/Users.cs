@@ -1,62 +1,74 @@
 ﻿using MemberNova.Admins;
+using Microsoft.VisualBasic;
 using Spectre.Console;
 
 namespace MemberNova.Helpers
 {
     public class Users
     {
-        
+
         public static void UserSelection()
         {
-            //var context = new DataContext();
-            //var Usuario = context.Usuarios.ToList();
-
+            Console.WriteLine("Bienvenido al portal de usuarios.\n");
             bool UserState = true;
 
             while (UserState)
             {
-
-                Console.Write("Portal de usuarios. Seleccione una de las siguientes opciones: \n");
-                Console.Write("1. Añadir usuarios.\t\t2. Mostrar usuarios.\t\t3. Buscar usuarios.\t\t4. Modificar usuarios\t\t5. Eliminar usuarios\t\t6.Salir.\n\n");
-
-                int UserSelection = Int32.Parse(Console.ReadLine());
-
-                switch (UserSelection)
+                try
                 {
-                    case 1:
-                        AddUser();
+                    Console.Write("Seleccione una de las siguientes opciones: \n");
+                    Console.Write("1. Añadir usuarios.\n2. Mostrar usuarios.\n3. Buscar usuarios.\n4. Modificar usuarios\n5. Ver pagos\n6.Salir.\n\n");
 
-                        break;
+                    int UserSelection = Int32.Parse(Console.ReadLine());
 
-                    case 2:
-                        ShowUsers();
+                    switch (UserSelection)
+                    {
 
-                        break;
+                        case 1:
+                            AddUser();
 
-                    case 3:
-                        SearchUsers();
+                            break;
 
-                        break;
+                        case 2:
+                            ShowUsers();
 
-                    case 4:
-                        UpdateUsers();
+                            break;
 
-                        break;
+                        case 3:
+                            SearchUsers();
 
-                    case 5:
-                        RemoveUsers();
+                            break;
 
-                        break;
+                        case 4:
+                            UpdateUsers();
 
-                    case 6:
-                        UserState = false;
-                        Console.Clear();
-                        break;
+                            break;
 
-                    default:
-                        Console.WriteLine("Por favor, introducir una entrada válida.");
-                        break;
+                        case 5:
+                            
+                            VerPagos();
+                            break;
 
+                        case 6:
+                            UserState = false;
+                            Console.Clear();
+                            break;
+
+                        default:
+                            Console.WriteLine("Por favor, introducir una entrada válida.");
+                            break;
+
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Error: Formato de entrada no válido.\nIntente nuevamente.\n {ex.Message}");
+                    return;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Ha ocurrido un error inesperado. Por favor intente de nuevo.");
+                    return;
                 }
             }
         }
@@ -84,13 +96,15 @@ namespace MemberNova.Helpers
 
 
             table.AddRow($"{usuario.ID}", $"{usuario.GetFullName()}", $"{usuario.Phone}", $"{usuario.Email}", $"{usuario.BillingAddress}", $"{usuario.Age}", $"{context.Membresias.FirstOrDefault(p => p.MiD == usuario.TipoMembresia).Tipo}");
-            
+
         }
 
 
         static void AddUser()
         {
             var context = new DataContext();
+            List<Usuario> Usuarios = context.Usuarios.ToList();
+
             var usuario = new Usuario();
 
             try
@@ -129,7 +143,7 @@ namespace MemberNova.Helpers
         }
 
 
-        static void ShowUsers()
+        public static void ShowUsers()
         {
             var context = new DataContext();
             List<Usuario> Usuarios = context.Usuarios.ToList();
@@ -144,29 +158,19 @@ namespace MemberNova.Helpers
         }
 
 
-        static void SearchUsers()
+        internal static void SearchUsers()
         {
             var context = new DataContext();
             List<Usuario> Usuarios = context.Usuarios.ToList();
 
             var table = UserTable();
 
-            Console.WriteLine("Introduzca el parametro de busqueda: 1. ID 2. Nombre 3. Apellido: ");
+            Console.WriteLine("Introduzca el parametro de busqueda: 1. Nombre 2. Apellido 3. Telefono 4. Email 5. Direccion: ");
             var op = Int32.Parse(Console.ReadLine());
 
             switch (op)
             {
                 case 1:
-                    Console.WriteLine("Introduzca el ID del usuario: ");
-                    int SelectedId = Convert.ToInt32(Console.ReadLine());
-                    var usuario = Usuarios.FirstOrDefault(p => p.ID == SelectedId);
-
-                    PrintUsuario(SelectedId, table);
-                    AnsiConsole.Write(table);
-
-                    break;
-
-                case 2:
                     Console.WriteLine("Introduzca el nombre del usuario: ");
                     string nameCrit = Console.ReadLine();
 
@@ -180,7 +184,7 @@ namespace MemberNova.Helpers
 
                     break;
 
-                case 3:
+                case 2:
                     Console.WriteLine("Introduzca el apellido del usuario: ");
                     var lastNCrit = Console.ReadLine();
 
@@ -194,12 +198,53 @@ namespace MemberNova.Helpers
 
                     break;
 
+                case 3:
+                    Console.WriteLine("Introduzca el numero de telefono del usuario: ");
+                    var PNCrit = Console.ReadLine();
+
+                    var PNTBF = Usuarios.Where(l => l.Phone.Contains(PNCrit)).ToList();
+
+                    foreach (var PN in PNTBF)
+                    {
+                        PrintUsuario(PN.ID, table);
+                    }
+                    AnsiConsole.Write(table);
+
+                    break;
+
+                case 4:
+                    Console.WriteLine("Introduzca la direccion de correo electronico del usuario: ");
+                    var emailCrit = Console.ReadLine();
+
+                    var emailTBF = Usuarios.Where(l => l.Email.Contains(emailCrit)).ToList();
+
+                    foreach (var email in emailTBF)
+                    {
+                        PrintUsuario(email.ID, table);
+                    }
+                    AnsiConsole.Write(table);
+
+                    break;
+
+                case 5:
+                    Console.WriteLine("Introduzca la direccion fisica del usuario: ");
+                    var AddyCrit = Console.ReadLine();
+
+                    var AddTBF = Usuarios.Where(l => l.BillingAddress.ToLower().Contains(AddyCrit.ToLower())).ToList();
+
+                    foreach (var add in AddTBF)
+                    {
+                        PrintUsuario(add.ID, table);
+                    }
+                    AnsiConsole.Write(table);
+
+                    break;
                 default:
                     Console.WriteLine("Favor introducir una entrada valida.");
                     break;
             }
 
-
+            Console.ReadKey(true);
         }
 
 
@@ -213,15 +258,25 @@ namespace MemberNova.Helpers
 
             Console.WriteLine("\nIntroduzca el numero de identificacion del usuario a modificar: ");
 
-            foreach(var usuario in Usuarios)
+            foreach (var usuario in Usuarios)
             {
                 PrintUsuario(usuario.ID, table);
             }
 
             AnsiConsole.Write(table);
 
+            Console.WriteLine("\nIntroduzca el numero de identificacion del usuario a modificar: \n");
+
             var id = Convert.ToInt32(Console.ReadLine());
+
             var user = Usuarios.FirstOrDefault(c => c.ID == id);
+
+            if (user is null)
+            {
+
+                Console.WriteLine("El usuario introducido no pudo ser encontrado.\nIntente de nuevo mas tarde.\n");
+                return;
+            }
 
             Console.WriteLine("\nSeleccione que parametro desea modificar en el orden numerico de los datos del usuario, (1. Nombre, 2. Apellido 3. Teléfono...): ");
             var sel = Int32.Parse(Console.ReadLine());
@@ -316,43 +371,50 @@ namespace MemberNova.Helpers
                     break;
 
                 default:
+                    Console.WriteLine("Introduzca una entrada valida.");
                     break;
+
             }
+
+            Console.ReadKey(true);
 
             context.SaveChanges();
         }
 
-
-        static void RemoveUsers()
+        static void VerPagos()
         {
-
             var context = new DataContext();
             List<Usuario> Usuarios = context.Usuarios.ToList();
+            var table = new Table();
 
-            Console.WriteLine("Por favor, digite el numero de identificacion del usuario a eliminar.");
+            table.AddColumns("ID", "Fecha", "Concepto", "Subtotal", "Descuento", "TOTAL");
+
+            Console.WriteLine("Introduzca el numero de identificacion del usuario a verificar: ");
 
             ShowUsers();
 
             var id = Convert.ToInt32(Console.ReadLine());
             var user = Usuarios.FirstOrDefault(c => c.ID == id);
 
-
-            Console.WriteLine($"¿Esta seguro que quiere eliminar el usuario {user.Name} {user.LastName}? \nPresione 1 para confirmar, 2 para denegar.");
-            if (Int32.Parse(Console.ReadLine()) == 1)
+            if (user is null)
             {
-                context.Usuarios.Remove(user);
-
-                Console.WriteLine("El usuario ha sido exitosamente eliminado.");
-
-                context.SaveChanges();
+                
+                Console.WriteLine("El usuario introducido no pudo ser encontrado.\nIntente de nuevo mas tarde.\n");
+                return;
 
             }
-            else
+
+            var PagosRealizados = context.Pagos.Where(p => p.UserChargedID == user.ID).ToList();
+
+            foreach(var Pago in PagosRealizados)
             {
-                Console.WriteLine("El usuario no fue eliminado.");
+
+                table.AddRow($"{Pago.PayID}", $"{Pago.Fecha}", $"{Pago.Concepto}", $"{Pago.Subtotal}", $"{Pago.Descuento}", $"{Pago.GetTotal()}");
+
             }
+            AnsiConsole.Write(table);
         }
 
-
     }
+
 }

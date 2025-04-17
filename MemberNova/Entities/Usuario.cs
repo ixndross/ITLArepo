@@ -39,6 +39,8 @@ namespace MemberNova.Admins
         //Referencia de navegacion a la entidad Membresia.
         public Membresia Membresia { get; set; } = null;
 
+        public ICollection<Pago> Pagos { get; } = new List<Pago>();
+
         //Metodo para exponer nombre completo de usuario.
         public string GetFullName()
         {

@@ -1,4 +1,5 @@
-﻿using System.Data.SqlTypes;
+﻿using MemberNova.Admins;
+using Spectre.Console;
 
 namespace MemberNova.Helpers
 {
@@ -9,68 +10,87 @@ namespace MemberNova.Helpers
         {
             bool PaymentState = true;
 
+            Console.WriteLine("\nPortal de pagos.\n");
+
             while (PaymentState)
             {
-
-                Console.Write("Portal de pagos. Seleccione una de las siguientes opciones: \n");
-                Console.WriteLine("1. Mostrar Pagos. \t\t2. Crear pago. \t\t3. Buscar pago (por numero de identificacion).\t\t4. Reembolsar Pago  \t\t5. Salir.\n");
-
-                int PaymentSelection = Convert.ToInt32(Console.ReadLine());
-
-                switch (PaymentSelection)
+                try
                 {
-                    case 1:
-                        MostrarPagos();
+                    Console.Write("Seleccione una de las siguientes opciones: \n");
+                    Console.WriteLine("1. Mostrar Pagos. \n2. Crear pago. \n3. Buscar pago (por numero de identificacion).\n4. Reembolsar Pago  \n5. Salir.\n");
 
-                        break;
+                    int PaymentSelection = Convert.ToInt32(Console.ReadLine());
 
-                    case 2:
-                        PagoManual();
+                    switch (PaymentSelection)
+                    {
+                        case 1:
+                            MostrarPagos();
 
-                        break;
+                            break;
 
-                    case 3:
-                        BuscarPagos();
+                        case 2:
+                            PagoManual();
 
-                        break;
+                            break;
 
-                    case 4:
-                        ReembolsarPagos();
+                        case 3:
+                            BuscarPagos();
 
-                        break;
+                            break;
 
-                    case 5:
-                        PaymentState = false;
-                        Console.Clear();
-                        break;
+                        case 4:
+                            ReembolsarPagos();
 
-                    default:
-                        Console.WriteLine("Por favor, introducir una entrada válida.");
-                        break;
+                            break;
 
+                        case 5:
+                            PaymentState = false;
+                            Console.Clear();
+                            break;
+
+                        default:
+                            Console.WriteLine("Por favor, introducir una entrada válida.");
+                            break;
+
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Error: Formato de entrada no válido.\nIntente nuevamente.\n {ex.Message}");
+                    return;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Ha ocurrido un error inesperado. Por favor intente de nuevo.");
+                    return;
                 }
             }
         }
 
-
-        static void PrintPaymentsHeader()
+        static Table PaymentTable()
         {
-            Console.WriteLine($"\nFecha\t\tIdentificacion de pago\t\tConcepto\t\tSubtotal\t\tDescuento\t\tTotal\n");
-            Console.WriteLine($"___________________________________________________________________________________________________________________________________\n");
+            var table = new Table();
+            table.Border = TableBorder.Square;
+            table.ShowRowSeparators = true;
+            table.AddColumn("ID");
+            table.AddColumn("Fecha");
+            table.AddColumn("Concepto");
+            table.AddColumns("Usuario cobrado");
+            table.AddColumn("Subtotal");
+            table.AddColumn("Descuento");
+            table.AddColumn("TOTAL");
 
+            return table;
         }
 
 
-        static void PrintPayments(int id)
+        public static void PrintPayments(int id, Table table)
         {
             var context = new DataContext();
-            List<Pago> Pagos = context.Pagos.ToList();
+            var pago = context.Pagos.FirstOrDefault(p => p.PayID == id);
 
-            var pago = Pagos.FirstOrDefault(p => p.PayID == id);
-            Console.WriteLine($"{pago.Fecha}\t\t{pago.PayID}\t\t{pago.Concepto}\t\t{pago.Subtotal}\t\t{pago.Descuento}\t\t{pago.GetTotal()}\n");
-
+            table.AddRow($"{pago.PayID}", $"{pago.Fecha}", $"{pago.Concepto}", $"{context.Usuarios.FirstOrDefault(p => p.ID == pago.UserChargedID).GetFullName()}", $"{pago.Subtotal}", $"{pago.Descuento}", $"{pago.GetTotal()}");
         }
-
 
 
         //Payment processor's API can be included in this section as an authomatic way of charging users and members.
@@ -79,15 +99,26 @@ namespace MemberNova.Helpers
 
 
         static void PagoManual()
-        {
+        {   
             var context = new DataContext();
             List<Pago> Pagos = context.Pagos.ToList();
 
             var pago = new Pago();
 
-            pago.Fecha = DateTime.Now;
+            pago.Fecha = DateTime.Today;
             Console.Write("Escriba el concepto del nuevo pago: ");
             pago.Concepto = Console.ReadLine();
+            Console.WriteLine("Escriba el numero de identificacion del usuario que ha realizado el pago: ");
+            Users.ShowUsers();
+            pago.UserChargedID = Convert.ToInt32(Console.ReadLine());
+            var usuario = context.Usuarios.FirstOrDefault(u => u.ID == pago.UserChargedID);
+
+            if (usuario is null)
+            {
+                Console.WriteLine("No se ha encontrado el usuario.");
+                return;
+            }
+
             Console.WriteLine("Introduzca el total del nuevo pago.");
             pago.Subtotal = decimal.Parse(Console.ReadLine());
             pago.Descuento = 0;
@@ -115,11 +146,13 @@ namespace MemberNova.Helpers
             var context = new DataContext();
             List<Pago> Pagos = context.Pagos.ToList();
 
-            PrintPaymentsHeader();
+            var table = PaymentTable();
+
             foreach (var pago in Pagos)
             {
-                PrintPayments(pago.PayID);
+                PrintPayments(pago.PayID, table);
             }
+            AnsiConsole.Write(table);
         }
 
 
@@ -128,12 +161,13 @@ namespace MemberNova.Helpers
             var context = new DataContext();
             List<Pago> Pagos = context.Pagos.ToList();
 
+            var table = PaymentTable();
+
             Console.WriteLine("Introduzca el numero de identificacion de la pago: ");
             int SelectedId = Convert.ToInt32(Console.ReadLine());
             var pago = Pagos.FirstOrDefault(p => p.PayID == SelectedId);
 
-            PrintPaymentsHeader();
-            PrintPayments(SelectedId);
+            PrintPayments(SelectedId, table);
         }
 
         static void ReembolsarPagos()
@@ -141,12 +175,27 @@ namespace MemberNova.Helpers
             var context = new DataContext();
             List<Pago> Pagos = context.Pagos.ToList();
 
-            Console.WriteLine("Introduzca el numero de identificacion de la pago: ");
+            var table = PaymentTable();
+
+            Console.WriteLine("Introduzca el numero de identificacion del pago a reembolsar: ");
+
+            foreach(var pago in Pagos)
+            {
+                PrintPayments(pago.PayID, table);
+            }
+            AnsiConsole.Write(table);
+
             int SelectedId = Convert.ToInt32(Console.ReadLine());
-            var pago = Pagos.FirstOrDefault(p => p.PayID == SelectedId);
+            var Pago = Pagos.FirstOrDefault(p => p.PayID == SelectedId);
+
+            if(Pago is null)
+            {
+                Console.WriteLine("No se ha encontrado el pago solicitado. Intente de nuevo.");
+                return;
+            }
 
             Console.WriteLine("Introduzca el monto a reembolsar: ");
-            pago.Descuento += decimal.Parse(Console.ReadLine());
+            Pago.Descuento += decimal.Parse(Console.ReadLine());
 
             context.SaveChanges();
         }

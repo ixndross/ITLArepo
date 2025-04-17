@@ -1,5 +1,4 @@
 ﻿
-using System.Reflection.Metadata;
 using MemberNova.Admins;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +19,17 @@ public class DataContext : DbContext
             .HasOne(e => e.Membresia)
             .WithMany(e => e.Usuarios)
             .HasForeignKey(e => e.TipoMembresia)
+            .IsRequired();
+
+        modelBuilder.Entity<Beneficio>()
+            .HasOne(e => e.Membresia)
+            .WithMany(e => e.Beneficios)
+            .HasForeignKey(e => e.TipoMembresia)
+            .IsRequired();
+        modelBuilder.Entity<Pago>()
+            .HasOne(e => e.Usuario)
+            .WithMany(e => e.Pagos)
+            .HasForeignKey(e => e.UserChargedID)
             .IsRequired();
     }
 }

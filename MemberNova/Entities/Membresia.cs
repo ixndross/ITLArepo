@@ -22,6 +22,10 @@ public class Membresia
 
     //Parametro por si el tipo de membresia es especial de algun tipo, con alguna disponibilidad exclusiva.
     public string IsExclusive { get; set; }
+
+    public int NumMiembros { get; set; }
     public ICollection<Usuario> Usuarios { get; } = new List<Usuario>();
+
+    public ICollection<Beneficio> Beneficios { get; } = new List<Beneficio>();
 
 }
