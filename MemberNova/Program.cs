@@ -18,7 +18,7 @@ namespace Program
                 {
                 Console.Clear();
 
-                Console.WriteLine("Bienvenido a MemberNova.\n"); //Try_catch needed
+                Console.WriteLine("Bienvenido a MemberNova.\n");
 
                 Helpers.Header();
 
