@@ -1,15 +1,13 @@
 ﻿using MemberNova.Admins;
-using Microsoft.VisualBasic;
 using Spectre.Console;
 
 namespace MemberNova.Helpers
 {
-    public class Users
+    public class RegUserHelpers
     {
-
-        public static void UserSelection()
+        public static void RegularUserSelection()
         {
-            Console.WriteLine("Bienvenido al portal de usuarios.\n");
+            Console.WriteLine("Bienvenido al portal de usuarios regulares.\n");
             bool UserState = true;
 
             while (UserState)
@@ -17,7 +15,7 @@ namespace MemberNova.Helpers
                 try
                 {
                     Console.Write("Seleccione una de las siguientes opciones: \n");
-                    Console.Write("1. Añadir usuarios.\n2. Mostrar usuarios.\n3. Buscar usuarios.\n4. Modificar usuarios\n5. Ver pagos\n6.Salir.\n\n");
+                    Console.Write("1. Añadir usuarios.\n2. Mostrar usuarios.\n3. Buscar usuarios.\n4. Modificar usuarios\n5. Ver pagos\n6. Salir del menu.\n\n");
 
                     int UserSelection = Int32.Parse(Console.ReadLine());
 
@@ -25,28 +23,28 @@ namespace MemberNova.Helpers
                     {
 
                         case 1:
-                            AddUser();
+                            AddRegUser();
 
                             break;
 
                         case 2:
-                            ShowUsers();
+                            ShowRegUsers();
 
                             break;
 
                         case 3:
-                            SearchUsers();
+                            SearchRegUsers();
 
                             break;
 
                         case 4:
-                            UpdateUsers();
+                            UpdateRegUsers();
 
                             break;
 
                         case 5:
-                            
-                            VerPagos();
+
+                            VerPagosRegulares();
                             break;
 
                         case 6:
@@ -91,8 +89,8 @@ namespace MemberNova.Helpers
 
         static void PrintUsuario(int id, Table table)
         {
-            var context = new DataContext();
-            var usuario = context.Usuarios.FirstOrDefault(p => p.ID == id);
+            var context = new MemberNova_DataContext();
+            var usuario = context.UsuariosRegulares.FirstOrDefault(p => p.ID == id);
 
 
             table.AddRow($"{usuario.ID}", $"{usuario.GetFullName()}", $"{usuario.Phone}", $"{usuario.Email}", $"{usuario.BillingAddress}", $"{usuario.Age}", $"{context.Membresias.FirstOrDefault(p => p.MiD == usuario.TipoMembresia).Tipo}");
@@ -100,53 +98,57 @@ namespace MemberNova.Helpers
         }
 
 
-        static void AddUser()
+        static void AddRegUser()
         {
-            var context = new DataContext();
-            List<Usuario> Usuarios = context.Usuarios.ToList();
-
-            var usuario = new Usuario();
+            var context = new MemberNova_DataContext();
 
             try
             {
+
+                var usuarioRegular = new UsuariosRegulares();
                 Console.Write("Nombre: ");
-                usuario.Name = Console.ReadLine();
+                usuarioRegular.Name = Console.ReadLine();
                 Console.Write("Apellido: ");
-                usuario.LastName = Console.ReadLine();
+                usuarioRegular.LastName = Console.ReadLine();
                 Console.Write("Numero de telefono: ");
-                usuario.Phone = Console.ReadLine();
+                usuarioRegular.Phone = Console.ReadLine();
                 Console.Write("Dirección de correo eléctronico: ");
-                usuario.Email = Console.ReadLine();
+                usuarioRegular.Email = Console.ReadLine();
                 Console.Write("Dirección: ");
-                usuario.BillingAddress = Console.ReadLine();
+                usuarioRegular.BillingAddress = Console.ReadLine();
                 Console.Write("Digite la edad de la persona en números: ");
-                usuario.Age = Convert.ToInt32(Console.ReadLine());
+                usuarioRegular.Age = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Confirme el tipo de membresia del usuario.");
+                if (String.IsNullOrWhiteSpace(usuarioRegular.Age.ToString()))
+                {
+                    throw new ArgumentNullException("Edad del usuario", "La edad introducida no es valida.\nFavor introducir nuevamente.");
+                }
 
+                Console.WriteLine("Confirme el tipo de membresia del usuario");
                 Memberships.ShowMembresias();
-                usuario.TipoMembresia = Convert.ToInt32(Console.ReadLine());
+                usuarioRegular.TipoMembresia = Convert.ToInt32(Console.ReadLine());
 
-                context.Usuarios.Add(usuario);
+                context.UsuariosRegulares.Add(usuarioRegular);
 
                 context.SaveChanges();
+
+                Console.WriteLine("El usuario ha sido creado exitosamente.");
             }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
             {
-                Console.WriteLine("ERROR AL CREAR EL USUARIO.\n\nIntroduzca una entrada valida.");
-                Console.ReadKey();
+                Console.WriteLine("ERROR AL CREAR EL USUARIO.\n\nIntroduzca un valor valido.");
             }
             finally
             {
-                Console.Clear();
+                Console.ReadKey(true);
             }
         }
 
 
-        public static void ShowUsers()
+        public static void ShowRegUsers()
         {
-            var context = new DataContext();
-            List<Usuario> Usuarios = context.Usuarios.ToList();
+            var context = new MemberNova_DataContext();
+            List<UsuariosRegulares> Usuarios = context.UsuariosRegulares.ToList();
 
             var table = UserTable();
             foreach (var user in Usuarios)
@@ -158,10 +160,10 @@ namespace MemberNova.Helpers
         }
 
 
-        internal static void SearchUsers()
+        internal static void SearchRegUsers()
         {
-            var context = new DataContext();
-            List<Usuario> Usuarios = context.Usuarios.ToList();
+            var context = new MemberNova_DataContext();
+            List<UsuariosRegulares> Usuarios = context.UsuariosRegulares.ToList();
 
             var table = UserTable();
 
@@ -248,10 +250,10 @@ namespace MemberNova.Helpers
         }
 
 
-        static void UpdateUsers()
+        static void UpdateRegUsers()
         {
-            var context = new DataContext();
-            List<Usuario> Usuarios = context.Usuarios.ToList();
+            var context = new MemberNova_DataContext();
+            List<UsuariosRegulares> Usuarios = context.UsuariosRegulares.ToList();
 
             var table = UserTable();
 
@@ -381,32 +383,32 @@ namespace MemberNova.Helpers
             context.SaveChanges();
         }
 
-        static void VerPagos()
+        static void VerPagosRegulares()
         {
-            var context = new DataContext();
-            List<Usuario> Usuarios = context.Usuarios.ToList();
+            var context = new MemberNova_DataContext();
+            List<UsuariosRegulares> Usuarios = context.UsuariosRegulares.ToList();
             var table = new Table();
 
             table.AddColumns("ID", "Fecha", "Concepto", "Subtotal", "Descuento", "TOTAL");
 
             Console.WriteLine("Introduzca el numero de identificacion del usuario a verificar: ");
 
-            ShowUsers();
+            ShowRegUsers();
 
             var id = Convert.ToInt32(Console.ReadLine());
             var user = Usuarios.FirstOrDefault(c => c.ID == id);
 
             if (user is null)
             {
-                
+
                 Console.WriteLine("El usuario introducido no pudo ser encontrado.\nIntente de nuevo mas tarde.\n");
                 return;
 
             }
 
-            var PagosRealizados = context.Pagos.Where(p => p.UserChargedID == user.ID).ToList();
+            var PagosRealizados = context.PagosRegulares.Where(p => p.UserChargedID == user.ID).ToList();
 
-            foreach(var Pago in PagosRealizados)
+            foreach (var Pago in PagosRealizados)
             {
 
                 table.AddRow($"{Pago.PayID}", $"{Pago.Fecha}", $"{Pago.Concepto}", $"{Pago.Subtotal}", $"{Pago.Descuento}", $"{Pago.GetTotal()}");

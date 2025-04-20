@@ -37,7 +37,7 @@ namespace MemberNova.Helpers
                             break;
 
                         case 4:
-                            RemoveBeneficios();
+                            RemoverBeneficios();
 
                             break;
 
@@ -79,7 +79,7 @@ namespace MemberNova.Helpers
             static void PrintBeneficio(int id, Table table)
             {
 
-                var context = new DataContext();
+                var context = new MemberNova_DataContext();
                 List<Beneficio> Beneficios = context.Beneficios.ToList();
 
                 var beneficio = Beneficios.FirstOrDefault(p => p.BiD == id);
@@ -92,7 +92,7 @@ namespace MemberNova.Helpers
             {
                 try
                 {
-                    var context = new DataContext();
+                    var context = new MemberNova_DataContext();
                     List<Beneficio> Beneficios = context.Beneficios.ToList();
 
                     Beneficio Beneficio = new Beneficio();
@@ -103,7 +103,7 @@ namespace MemberNova.Helpers
                     Console.WriteLine("Descripcion del beneficio: ");
                     Beneficio.Descripcion = Console.ReadLine();
 
-                    Console.Write("¿En que tipo de membresia se ocupa este beneficio?: ");
+                    Console.Write("¿En que tipo de membresia se ocupa este beneficio?: \n");
                     Memberships.ShowMembresias();
                     Beneficio.TipoMembresia = Convert.ToInt32(Console.ReadLine());
 
@@ -125,7 +125,7 @@ namespace MemberNova.Helpers
 
             static void MostrarBeneficios()
             {
-                var context = new DataContext();
+                var context = new MemberNova_DataContext();
                 List<Beneficio> Beneficios = context.Beneficios.ToList();
 
                 var table = BenefitsTable();
@@ -139,7 +139,7 @@ namespace MemberNova.Helpers
 
             static void ActualizarBeneficios()
             {
-                var context = new DataContext();
+                var context = new MemberNova_DataContext();
                 List<Beneficio> Beneficios = context.Beneficios.ToList();
 
                 MostrarBeneficios();
@@ -221,9 +221,9 @@ namespace MemberNova.Helpers
             }
 
 
-            static void RemoveBeneficios()
+            static void RemoverBeneficios()
             {
-                var context = new DataContext();
+                var context = new MemberNova_DataContext();
                 List<Beneficio> Beneficios = context.Beneficios.ToList();
 
                 Console.WriteLine("Por favor, digite el numero de identificacion del beneficio a eliminar.");

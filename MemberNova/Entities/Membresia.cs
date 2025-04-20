@@ -10,7 +10,7 @@ public class Membresia
     public int MiD { get; set; }
 
     //[MaxLength(60)]
-    //public string Usuario { get; set; }
+    //public string UsuarioRegulares { get; set; }
 
     [MaxLength(20)]
     public string Tipo { get; set; }
@@ -24,8 +24,23 @@ public class Membresia
     public string IsExclusive { get; set; }
 
     public int NumMiembros { get; set; }
-    public ICollection<Usuario> Usuarios { get; } = new List<Usuario>();
+    public ICollection<UsuariosRegulares> UsuariosRegulares { get; } = new List<UsuariosRegulares>();
+    public ICollection<UsuariosVIP> UsuariosVIP { get; } = new List<UsuariosVIP>();
 
     public ICollection<Beneficio> Beneficios { get; } = new List<Beneficio>();
+
+    public Membresia()
+    {
+        /////////////////
+    }
+    public Membresia(string tipo, string descripcion, decimal total, string isExclusive, int numMiembros)
+    {
+        Tipo = tipo;
+        Descripcion = descripcion;
+        Total = total;
+        IsExclusive = isExclusive;
+        NumMiembros = numMiembros;
+        //Constructor manual.
+    }
 
 }

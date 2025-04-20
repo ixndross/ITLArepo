@@ -1,9 +1,7 @@
-﻿using MemberNova.Admins;
-using Microsoft.Identity.Client.Extensions.Msal;
-using Spectre.Console;
+﻿using Spectre.Console;
 
 namespace MemberNova.Helpers
-{ 
+{
     public class Memberships
     {
         public static void MembershipSelection()
@@ -82,55 +80,60 @@ namespace MemberNova.Helpers
 
         static void PrintMembership(int id, Table table)
         {
-            var context = new DataContext();
+            var context = new MemberNova_DataContext();
 
             var Membresia = context.Membresias.FirstOrDefault(p => p.MiD == id);
 
-            table.AddRow($"{Membresia.MiD}", $"{Membresia.Tipo}", $"{Membresia.Descripcion}", $"{Membresia.Total}", $"{Membresia.IsExclusive}", $"{context.Usuarios.Where(p => p.TipoMembresia == Membresia.MiD).ToList().Count}");
+            table.AddRow($"{Membresia.MiD}", $"{Membresia.Tipo}", $"{Membresia.Descripcion}", $"{Membresia.Total}", $"{Membresia.IsExclusive}", $"{context.UsuariosRegulares.Where(p => p.TipoMembresia == Membresia.MiD).ToList().Count +
+                                                                                                                                                   context.UsuariosVIP.Where(p => p.TipoMembresia == Membresia.MiD).ToList().Count()}");
         }
         static void NuevaMembresia()
         {
 
-            try
+            //try
+            //{
+            var context = new MemberNova_DataContext();
+            List<Membresia> Membresias = context.Membresias.ToList();
+            var membresia = new Membresia();
+            Console.Write("Escriba el nombre de la nueva membresia: ");
+            membresia.Tipo = Console.ReadLine();
+            Console.WriteLine("Introduzca la descripcion de la nueva membresia.");
+            membresia.Descripcion = Console.ReadLine();
+            Console.WriteLine("Introduzca el costo total de la nueva membresia.");
+            membresia.Total = decimal.Parse(Console.ReadLine());
+            membresia.IsExclusive = "N/A";
+            Console.WriteLine("¿Es esta membresia exclusiva?\nPresione 1 para confirmar. Presione otro boton para rechazar.");
+            if (Int32.Parse(Console.ReadLine()) == 1)
             {
-                var context = new DataContext();
-                List<Membresia> Membresias = context.Membresias.ToList();
-                var membresia = new Membresia();
-                Console.Write("Escriba el nombre de la nueva membresia: ");
-                membresia.Tipo = Console.ReadLine();
-                Console.WriteLine("Introduzca la descripcion de la nueva membresia.");
-                membresia.Descripcion = Console.ReadLine();
-                Console.WriteLine("Introduzca el costo total de la nueva membresia.");
-                membresia.Total = decimal.Parse(Console.ReadLine());
+                Console.WriteLine("Introduzca los parametros de la exclusividad de este tipo de membresia.");
+                membresia.IsExclusive = Console.ReadLine();
+            }
+            else
+            {
                 membresia.IsExclusive = "N/A";
-                Console.WriteLine("¿Es esta membresia exclusiva?\nPresione 1 para confirmar. Presione otro boton para rechazar.");
-                if (Int32.Parse(Console.ReadLine()) == 1)
-                {
-                    Console.WriteLine("Introduzca los parametros de la exclusividad de este tipo de membresia.");
-                    membresia.IsExclusive = Console.ReadLine();
-                }
+            }
 
-                membresia.NumMiembros = context.Usuarios.Where(p => p.TipoMembresia == membresia.MiD).ToList().Count();
+            membresia.NumMiembros = context.UsuariosRegulares.Where(p => p.TipoMembresia == membresia.MiD).ToList().Count();
 
-                context.Membresias.Add(membresia);
-                context.SaveChanges();
-            }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
-            {
-                Console.WriteLine("ERROR AL CREAR LA MEMBRESIA.\n\nIntroduzca una entrada valida.");
-                Console.ReadKey();
-            }
-            finally
-            {
-                Console.Clear();
-            }
-            
+            context.Membresias.Add(membresia);
+            context.SaveChanges();
+            //}
+            //catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            //{
+            //    Console.WriteLine("ERROR AL CREAR LA MEMBRESIA.\n\nIntroduzca una entrada valida.");
+            //    Console.ReadKey();
+            //}
+            //finally
+            //{
+            //    Console.Clear();
+            //}
+
         }
 
 
         internal static void ShowMembresias()
         {
-            var context = new DataContext();
+            var context = new MemberNova_DataContext();
             List<Membresia> Membresias = context.Membresias.ToList();
 
             var table = MembershipTable();
@@ -146,7 +149,7 @@ namespace MemberNova.Helpers
 
         static void ModificarMembresia()
         {
-            var context = new DataContext();
+            var context = new MemberNova_DataContext();
             List<Membresia> Membresias = context.Membresias.ToList();
 
             Console.WriteLine("\nIntroduzca el numero de identificacion de la membresia a modificar: ");
@@ -159,7 +162,7 @@ namespace MemberNova.Helpers
             var id = Convert.ToInt32(Console.ReadLine());
             var mbship = Membresias.FirstOrDefault(c => c.MiD == id);
 
-            if(mbship == null)
+            if (mbship == null)
             {
                 Console.WriteLine("No se ha encontrado la membresia seleccionada.\n");
                 return;
@@ -225,7 +228,7 @@ namespace MemberNova.Helpers
 
             }
             context.SaveChanges();
-            
+
         }
 
     }

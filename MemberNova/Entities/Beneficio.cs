@@ -14,9 +14,21 @@ public class Beneficio
     [MaxLength(500)]
     public string Descripcion { get; set; }
 
-    //Llave foranea dentro de la base de datos, relacionando al usuario con una membresia con ID unico.
+    //Llave foranea dentro de la base de datos, relacionando el beneficio seleccionado con una membresia con ID unico.
     [ForeignKey("TipoMembresia")]
     public int TipoMembresia { get; set; }
     //Referencia de navegacion a la entidad Membresia.
     public Membresia Membresia { get; set; } = null;
+
+    public Beneficio()
+    {
+        //Constructor por defecto
+    }
+
+    public Beneficio(string nombre, string descripcion, int tipoMembresia)
+    {
+        Nombre = nombre;
+        Descripcion = descripcion;
+        TipoMembresia = 0;
+    }  
 }

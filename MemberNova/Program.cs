@@ -1,6 +1,5 @@
 ﻿using System.Data.SqlTypes;
 using MemberNova.Helpers;
-using Spectre.Console;
 
 namespace Program
 {
@@ -11,7 +10,7 @@ namespace Program
         {
             bool running = true;
 
-            var context = new DataContext();
+            var context = new MemberNova_DataContext();
 
             while (running)
             {
@@ -29,7 +28,7 @@ namespace Program
                     {
                         case 1:
 
-                            Users.UserSelection();
+                            Helpers.UserMenu();
 
                             break;
 
@@ -38,7 +37,7 @@ namespace Program
                             break;
 
                         case 3:
-                            Payments.PaymentPortal();
+                            Helpers.PaymentMenu();
 
                             break;
 

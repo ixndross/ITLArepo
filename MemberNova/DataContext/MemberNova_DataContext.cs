@@ -1,12 +1,15 @@
 ﻿
 using MemberNova.Admins;
 using Microsoft.EntityFrameworkCore;
+using MemberNova.Helpers;
 
-public class DataContext : DbContext
+public class MemberNova_DataContext : DbContext
 {
-    public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<UsuariosRegulares> UsuariosRegulares { get; set; }
+    public DbSet<UsuariosVIP> UsuariosVIP { get; set; }
     public DbSet<Membresia> Membresias { get; set; }
-    public DbSet<Pago> Pagos { get; set; }
+    public DbSet<PagoRegular> PagosRegulares { get; set; }
+    public DbSet<PagosVIP> PagosVIP { get; set; }
     public DbSet<Beneficio> Beneficios { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -15,9 +18,15 @@ public class DataContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Usuario>()
+        modelBuilder.Entity<UsuariosRegulares>()
             .HasOne(e => e.Membresia)
-            .WithMany(e => e.Usuarios)
+            .WithMany(e => e.UsuariosRegulares)
+            .HasForeignKey(e => e.TipoMembresia)
+            .IsRequired();
+
+        modelBuilder.Entity<UsuariosVIP>()
+            .HasOne(e => e.Membresia)
+            .WithMany(e => e.UsuariosVIP)
             .HasForeignKey(e => e.TipoMembresia)
             .IsRequired();
 
@@ -26,10 +35,17 @@ public class DataContext : DbContext
             .WithMany(e => e.Beneficios)
             .HasForeignKey(e => e.TipoMembresia)
             .IsRequired();
-        modelBuilder.Entity<Pago>()
+
+        modelBuilder.Entity<PagoRegular>()
             .HasOne(e => e.Usuario)
             .WithMany(e => e.Pagos)
             .HasForeignKey(e => e.UserChargedID)
+            .IsRequired();
+
+        modelBuilder.Entity<PagosVIP>()
+            .HasOne(e => e.Usuario)
+            .WithMany(e => e.Pagos)
+            .HasForeignKey(e => e.VIPUserChargedID)
             .IsRequired();
     }
 }

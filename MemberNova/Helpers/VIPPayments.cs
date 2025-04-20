@@ -3,43 +3,43 @@ using Spectre.Console;
 
 namespace MemberNova.Helpers
 {
-    public class Payments
+    public class VIPPayments
     {
 
-        public static void PaymentPortal()
+        public static void VIPPaymentPortal()
         {
             bool PaymentState = true;
 
-            Console.WriteLine("\nPortal de pagos.\n");
+            Console.WriteLine("\nPortal de pagos VIP.\n");
 
             while (PaymentState)
             {
                 try
                 {
                     Console.Write("Seleccione una de las siguientes opciones: \n");
-                    Console.WriteLine("1. Mostrar Pagos regulares. \n2. Crear pago. \n3. Buscar pago (por numero de identificacion).\n4. Reembolsar Pago  \n5. Salir.\n");
+                    Console.WriteLine("1. Mostrar Pagos VIP. \n2. Crear pago. \n3. Buscar pago VIP (por numero de identificacion).\n4. Reembolsar Pago VIP  \n5. Salir.\n");
 
                     int PaymentSelection = Convert.ToInt32(Console.ReadLine());
 
                     switch (PaymentSelection)
                     {
                         case 1:
-                            MostrarPagos();
+                            MostrarPagosVIP();
 
                             break;
 
                         case 2:
-                            PagoManual();
+                            PagoVIPManual();
 
                             break;
 
                         case 3:
-                            BuscarPagos();
+                            BuscarPagosVIP();
 
                             break;
 
                         case 4:
-                            ReembolsarPagos();
+                            ReembolsarPagosVIP();
 
                             break;
 
@@ -57,11 +57,13 @@ namespace MemberNova.Helpers
                 catch (FormatException ex)
                 {
                     Console.WriteLine($"Error: Formato de entrada no válido.\nIntente nuevamente.\n {ex.Message}");
+                    Console.ReadKey(true);
                     return;
                 }
                 catch (Exception)
                 {
                     Console.WriteLine("Ha ocurrido un error inesperado. Por favor intente de nuevo.");
+                    Console.ReadKey(true);
                     return;
                 }
             }
@@ -84,36 +86,37 @@ namespace MemberNova.Helpers
         }
 
 
-        public static void PrintPayments(int id, Table table)
+        public static void Print_VIP_Payments(int id, Table table)
         {
             var context = new MemberNova_DataContext();
-            var pago = context.PagosRegulares.FirstOrDefault(p => p.PayID == id);
+            var pago = context.PagosVIP.FirstOrDefault(p => p.PayID == id);
 
-            table.AddRow($"{pago.PayID}", $"{pago.Fecha}", $"{pago.Concepto}", $"{context.UsuariosRegulares.FirstOrDefault(p => p.ID == pago.UserChargedID).GetFullName()}", $"{pago.Subtotal}", $"{pago.Descuento}", $"{pago.GetTotal()}");
+            table.AddRow($"{pago.PayID}", $"{pago.Fecha}", $"{pago.Concepto}", $"{context.UsuariosVIP.FirstOrDefault(p => p.ID == pago.VIPUserChargedID).GetFullName()}", $"{pago.Subtotal}", $"{pago.Descuento}", $"{pago.GetTotal()}");
         }
 
 
-        //Payment processor's API can be included in this section as an authomatic way of charging users and members.
+        //Aqui se podria incluir alguna API de procesamiento de pagos automaticos desde un metodo de pago del usuario.
 
         //static void Payments() { }
 
 
-        static void PagoManual()
+        static void PagoVIPManual()
         {
             var context = new MemberNova_DataContext();
-            List<PagoRegular> Pagos = context.PagosRegulares.ToList();
+            List<PagosVIP> pagos = context.PagosVIP.ToList();
 
-            var pago = new PagoRegular();
+            var pago = new PagosVIP();
 
             pago.Fecha = DateTime.Now;
             Console.Write("Escriba el concepto del nuevo pago: ");
             pago.Concepto = Console.ReadLine();
 
-            Console.WriteLine("Escriba el numero de identificacion del usuario regular que ha realizado el pago: ");
-            RegUserHelpers.ShowRegUsers();
-            pago.UserChargedID = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Escriba el numero de identificacion del usuario VIP que ha realizado el pago: ");
 
-            var usuario = context.UsuariosRegulares.FirstOrDefault(u => u.ID == pago.UserChargedID);
+            VIPUsersHelpers.ShowVIPUsers();
+
+            pago.VIPUserChargedID = Convert.ToInt32(Console.ReadLine());
+            var usuario = context.UsuariosVIP.FirstOrDefault(u => u.ID == pago.VIPUserChargedID);
 
             if (usuario is null)
             {
@@ -137,36 +140,36 @@ namespace MemberNova.Helpers
 
             pago.Total = pago.GetTotal();
 
-            context.PagosRegulares.Add(pago);
+            context.PagosVIP.Add(pago);
 
             context.SaveChanges();
         }
 
 
-        static void MostrarPagos()
+
+        static void MostrarPagosVIP()
         {
             var context = new MemberNova_DataContext();
-            List<PagoRegular> Pagos = context.PagosRegulares.ToList();
+            List<PagosVIP> Pagos = context.PagosVIP.ToList();
 
             var table = PaymentTable();
 
             foreach (var pago in Pagos)
             {
-                PrintPayments(pago.PayID, table);
+                Print_VIP_Payments(pago.PayID, table);
             }
             AnsiConsole.Write(table);
         }
 
 
-        static void BuscarPagos()
+        static void BuscarPagosVIP()
         {
             var context = new MemberNova_DataContext();
-            List<PagoRegular> Pagos = context.PagosRegulares.ToList();
+            List<PagosVIP> Pagos = context.PagosVIP.ToList();
 
             var table = PaymentTable();
 
             Console.WriteLine("Introduzca el numero de identificacion del pago: ");
-
             try
             {
                 int SelectedId = Convert.ToInt32(Console.ReadLine());
@@ -174,22 +177,21 @@ namespace MemberNova.Helpers
 
                 foreach (var pag in pago)
                 {
-                    PrintPayments(pag.PayID, table);
+                    Print_VIP_Payments(pag.PayID, table);
                 }
-
                 AnsiConsole.Write(table);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("No se pudo encontrar la identificacion del pago introducido.\nPor favor, intente de nuevo.\n\n");
+                Console.WriteLine("No se pudo encontrar la identificacion del pago introducido.\nPor favor, intente de nuevo.");
 
             }
         }
 
-        static void ReembolsarPagos()
+        static void ReembolsarPagosVIP()
         {
             var context = new MemberNova_DataContext();
-            List<PagoRegular> Pagos = context.PagosRegulares.ToList();
+            List<PagosVIP> Pagos = context.PagosVIP.ToList();
 
             var table = PaymentTable();
 
@@ -197,7 +199,7 @@ namespace MemberNova.Helpers
 
             foreach (var pago in Pagos)
             {
-                PrintPayments(pago.PayID, table);
+                Print_VIP_Payments(pago.PayID, table);
             }
             AnsiConsole.Write(table);
 
