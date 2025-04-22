@@ -9,9 +9,6 @@ public class Membresia
     [Key]
     public int MiD { get; set; }
 
-    //[MaxLength(60)]
-    //public string UsuarioRegulares { get; set; }
-
     [MaxLength(20)]
     public string Tipo { get; set; }
 
